@@ -754,6 +754,71 @@ function makeCatSVG(healthy = false) {
 }
 
 // ═══════════════════════════════════════════════════════
+//   角色渲染（優先用 ASSETS 圖片，否則退回 SVG）
+// ═══════════════════════════════════════════════════════
+function renderChar(id, expression) {
+  const charAssets = ASSETS.characters[id];
+  if (charAssets) {
+    const url = charAssets[expression] || charAssets['default'];
+    if (url) return `<img src="${url}" style="width:100%;height:100%;object-fit:contain;object-position:bottom" draggable="false">`;
+  }
+  if (id === 'player')  return makePlayerSVG(expression || 'normal');
+  if (id === 'seller')  return makeSellerSVG(expression || 'normal');
+  if (id === 'vet')     return makeVetSVG();
+  if (id === 'police')  return makePoliceSVG();
+  return '';
+}
+
+// ═══════════════════════════════════════════════════════
+//   【自定義圖片設定區】
+//   填入圖片路徑或 URL 即可替換預設 SVG／漸層
+//   留空（不填）則自動使用內建預設
+// ═══════════════════════════════════════════════════════
+const ASSETS = {
+
+  // ── 背景圖片 ──────────────────────────────────────────
+  // 場景名稱對應圖片，不填則用預設漸層色
+  backgrounds: {
+    // home:         'images/bg_home.jpg',
+    // shop_page:    'images/bg_shop.jpg',
+    // living_room:  'images/bg_living.jpg',
+    // vet:          'images/bg_vet.jpg',
+    // police:       'images/bg_police.jpg',
+    // courtroom:    'images/bg_court.jpg',
+    // dark:         'images/bg_dark.jpg',
+    // ending:       'images/bg_ending.jpg',
+  },
+
+  // ── 人物立繪 ──────────────────────────────────────────
+  // 每個角色可對應「表情名稱 → 圖片」
+  // 支援的表情：normal / happy / sad / angry / determined（主角）
+  //             sly / scared（賣家）
+  //             default（獸醫、警察）
+  // 不填則用預設 SVG
+  characters: {
+    // player: {
+    //   normal:     'images/player_normal.png',
+    //   happy:      'images/player_happy.png',
+    //   sad:        'images/player_sad.png',
+    //   angry:      'images/player_angry.png',
+    //   determined: 'images/player_determined.png',
+    // },
+    // seller: {
+    //   sly:        'images/seller_sly.png',
+    //   scared:     'images/seller_scared.png',
+    // },
+    // vet:    { default: 'images/vet.png' },
+    // police: { default: 'images/police.png' },
+  },
+
+  // ── 貓咪圖片 ──────────────────────────────────────────
+  cat: {
+    // sick:    'images/cat_sick.png',
+    // healthy: 'images/cat_healthy.png',
+  },
+};
+
+// ═══════════════════════════════════════════════════════
 //   場景背景生成
 // ═══════════════════════════════════════════════════════
 function makeBgCSS(scene) {
@@ -934,50 +999,46 @@ function updateCharacters(charConfig) {
       const cfg = charConfig[id];
       if (!cfg && cfg !== false) return;
       const el_c = el('char-' + id);
-      if (id === 'player') el_c.innerHTML = makePlayerSVG(cfg || 'normal');
-      else if (id === 'seller') el_c.innerHTML = makeSellerSVG(cfg || 'normal');
-      else if (id === 'vet') el_c.innerHTML = makeVetSVG();
-      else if (id === 'police') el_c.innerHTML = makePoliceSVG();
+      el_c.innerHTML = renderChar(id, cfg === true ? 'default' : (cfg || 'normal'));
       el_c.classList.remove('hidden');
     });
   }, 100);
 }
 
 function updateCharExpressions(step) {
-  if (step.player !== undefined) {
-    const pc = el('char-player');
-    if (!pc.classList.contains('hidden')) {
-      pc.innerHTML = makePlayerSVG(step.player);
-    }
-  }
-  if (step.seller !== undefined) {
-    const sc = el('char-seller');
-    if (!sc.classList.contains('hidden')) {
-      sc.innerHTML = makeSellerSVG(step.seller);
-    }
-  }
-  if (step.vet) {
-    const vc = el('char-vet');
-    if (!vc.classList.contains('hidden')) vc.innerHTML = makeVetSVG();
-  }
-  if (step.police) {
-    const poc = el('char-police');
-    if (!poc.classList.contains('hidden')) poc.innerHTML = makePoliceSVG();
-  }
+  const expMap = { player: step.player, seller: step.seller, vet: step.vet, police: step.police };
+  Object.entries(expMap).forEach(([id, exp]) => {
+    if (exp === undefined) return;
+    const c = el('char-' + id);
+    if (!c || c.classList.contains('hidden')) return;
+    c.innerHTML = renderChar(id, exp === true ? 'default' : (exp || 'normal'));
+  });
 }
 
 function showCat(type) {
   const catEl = el('cat-display');
-  if (!type) {
-    catEl.classList.add('hidden');
-    return;
+  if (!type) { catEl.classList.add('hidden'); return; }
+  const imgUrl = ASSETS.cat[type];
+  if (imgUrl) {
+    catEl.innerHTML = `<img src="${imgUrl}" style="width:100%;height:100%;object-fit:contain" draggable="false">`;
+  } else {
+    catEl.innerHTML = makeCatSVG(type === 'healthy');
   }
-  catEl.innerHTML = makeCatSVG(type === 'healthy');
   catEl.classList.remove('hidden');
 }
 
 function setBg(scene) {
-  el('scene-bg').style.background = makeBgCSS(scene);
+  const bg = el('scene-bg');
+  const imgUrl = ASSETS.backgrounds[scene];
+  if (imgUrl) {
+    bg.style.background = '';
+    bg.style.backgroundImage = `url('${imgUrl}')`;
+    bg.style.backgroundSize = 'cover';
+    bg.style.backgroundPosition = 'center';
+  } else {
+    bg.style.backgroundImage = '';
+    bg.style.background = makeBgCSS(scene);
+  }
 }
 
 function doFlash() {
