@@ -64,15 +64,16 @@
   /* ── 角色立繪區 ── */
   #characters {
     position: absolute;
-    bottom: 160px; left: 0; right: 0;
-    height: 360px;
+    bottom: 155px; left: 0; right: 0;
+    height: min(460px, 75%);
     display: flex; align-items: flex-end; justify-content: center;
-    gap: 40px;
+    gap: 20px;
     pointer-events: none;
   }
 
   .character {
-    width: 200px; height: 340px;
+    width: min(280px, 38vw);
+    height: 100%;
     position: relative;
     transition: all 0.5s ease;
     filter: drop-shadow(0 8px 24px rgba(0,0,0,0.6));
@@ -761,7 +762,7 @@ function renderChar(id, expression) {
   const charAssets = ASSETS.characters[id];
   if (charAssets) {
     const url = charAssets[expression] || charAssets['default'];
-    if (url) return `<img src="${url}" style="width:100%;height:100%;object-fit:contain;object-position:bottom" draggable="false">`;
+    if (url) return `<img src="${url}" style="width:100%;height:100%;object-fit:contain;object-position:top center" draggable="false">`;
   }
   if (id === 'player')  return makePlayerSVG(expression || 'normal');
   if (id === 'seller')  return makeSellerSVG(expression || 'normal');
