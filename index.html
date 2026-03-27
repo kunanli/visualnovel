@@ -64,18 +64,18 @@
   /* ── 角色立繪區 ── */
   #characters {
     position: absolute;
-    bottom: 160px; left: 0; right: 0;
-    height: 380px;
-    display: flex; align-items: flex-end; justify-content: center;
-    gap: 30px;
+    inset: 0;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 50px;
     pointer-events: none;
   }
 
   .character {
-    width: 260px;
-    height: 380px;
+    height: 92%;
+    width: auto;
     flex-shrink: 0;
-    position: relative;
     transition: all 0.5s ease;
     filter: drop-shadow(0 8px 24px rgba(0,0,0,0.6));
   }
@@ -85,7 +85,9 @@
   .character.dimmed { filter: drop-shadow(0 8px 24px rgba(0,0,0,0.6)) brightness(0.5) saturate(0.4); }
 
   .char-svg {
-    width: 100%; height: 100%;
+    height: 100%;
+    width: auto;
+    display: block;
   }
 
   /* ── 貓咪立繪 ── */
@@ -429,7 +431,7 @@
     <div id="main-subtitle">— 一隻貓與一場騙局 —</div>
     <button id="start-btn" onclick="startGame()">開始故事</button>
     <div style="font-size:11px; color:rgba(255,255,255,0.2); margin-top:20px; letter-spacing:2px;">點擊對話可繼續</div>
-    <div style="font-size:10px; color:rgba(247,168,208,0.3); letter-spacing:2px;">v3</div>
+    <div style="font-size:10px; color:rgba(247,168,208,0.3); letter-spacing:2px;">v9</div>
   </div>
 
   <!-- 場景背景 -->
@@ -763,7 +765,7 @@ function renderChar(id, expression) {
   const charAssets = ASSETS.characters[id];
   if (charAssets) {
     const url = charAssets[expression] || charAssets['default'];
-    if (url) return `<img src="${url}" style="width:100%;height:100%;object-fit:contain;object-position:bottom center" draggable="false">`;
+    if (url) return `<img src="${url}" style="height:100%;width:auto;display:block;object-fit:contain;object-position:bottom center" draggable="false">`;
   }
   if (id === 'player')  return makePlayerSVG(expression || 'normal');
   if (id === 'seller')  return makeSellerSVG(expression || 'normal');
