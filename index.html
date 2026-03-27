@@ -417,7 +417,7 @@
 
 <div id="stars"></div>
 
-<div id="game">
+<div id="game" onclick="handleClick()">
 
   <!-- 開始畫面 -->
   <div id="title-screen">
@@ -467,7 +467,7 @@
   <div id="cat-display" class="hidden"></div>
 
   <!-- 對話框 -->
-  <div id="dialog-box" onclick="handleClick()">
+  <div id="dialog-box">
     <div id="speaker-name"></div>
     <div id="dialog-text"></div>
     <div id="click-hint">▼ 點擊繼續</div>
@@ -1070,7 +1070,8 @@ function showChoices(step) {
     const btn = document.createElement('button');
     btn.className = 'choice-btn';
     btn.textContent = opt.text;
-    btn.onclick = () => {
+    btn.onclick = (e) => {
+      e.stopPropagation();
       choicesEl.innerHTML = '';
       el('dialog-box').style.cursor = 'pointer';
       jumpTo = opt.next;
