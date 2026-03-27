@@ -428,10 +428,10 @@
     <div class="title-paw">🐾</div>
     <div class="title-deco">VISUAL NOVEL</div>
     <div id="main-title">謊言與<br>毛球</div>
-    <div id="main-subtitle">— 一隻貓與一場騙局 —</div>
+    <div id="main-subtitle">— 她的貓，她的謊言，還有我 —</div>
     <button id="start-btn" onclick="startGame()">開始故事</button>
     <div style="font-size:11px; color:rgba(255,255,255,0.2); margin-top:20px; letter-spacing:2px;">點擊對話可繼續</div>
-    <div style="font-size:10px; color:rgba(247,168,208,0.3); letter-spacing:2px;">v9</div>
+    <div style="font-size:10px; color:rgba(247,168,208,0.3); letter-spacing:2px;">v10</div>
   </div>
 
   <!-- 場景背景 -->
@@ -462,7 +462,7 @@
 
   <!-- 角色立繪 -->
   <div id="characters">
-    <div class="character hidden" id="char-player"></div>
+    <div class="character hidden" id="char-yuqing"></div>
     <div class="character hidden" id="char-seller"></div>
     <div class="character hidden" id="char-vet"></div>
     <div class="character hidden" id="char-police"></div>
@@ -764,10 +764,10 @@ function makeCatSVG(healthy = false) {
 function renderChar(id, expression) {
   const charAssets = ASSETS.characters[id];
   if (charAssets) {
-    const url = charAssets[expression] || charAssets['default'];
+    const url = charAssets[expression] || charAssets['normal'] || charAssets['default'];
     if (url) return `<img src="${url}" style="height:100%;width:auto;display:block;object-fit:contain;object-position:bottom center" draggable="false">`;
   }
-  if (id === 'player')  return makePlayerSVG(expression || 'normal');
+  if (id === 'yuqing')  return makePlayerSVG(expression || 'normal');
   if (id === 'seller')  return makeSellerSVG(expression || 'normal');
   if (id === 'vet')     return makeVetSVG();
   if (id === 'police')  return makePoliceSVG();
@@ -801,7 +801,7 @@ const ASSETS = {
   //             default（獸醫、警察）
   // 不填則用預設 SVG
   characters: {
-    player: {
+    yuqing: {
       normal:     'images/player_normal.png',
       happy:      'images/player_happy.png',
       // sad:        'images/player_sad.png',
@@ -845,86 +845,136 @@ function makeBgCSS(scene) {
 // ═══════════════════════════════════════════════════════
 const SCRIPT = [
   // ── Chapter 1 ──
-  { type: 'chapter', num: 'Chapter 01', title: '夢想中的毛孩子', sub: '你一直想養一隻波斯貓…' },
+  { type: 'chapter', num: 'Chapter 01', title: '夢想中的毛孩子', sub: '她一直想養一隻貓…' },
   { bg: 'home', chars: {}, cat: false },
-  { speaker: '（旁白）', text: '深夜，螢幕的藍光映在妳臉上。\n妳已經在貓咪論壇逛了三個小時了。', player: 'normal' },
-  { speaker: '雨晴', text: '啊！異國短毛貓！好可愛喔…\n而且價格好像很合理。', player: 'happy' },
-  { bg: 'shop_page', chars: { player: 'normal' }, cat: false },
+  { speaker: '（旁白）', text: '那天下課後，雨晴拉著我去她家。\n說是有「超重要的事情」要讓我看。' },
+  { bg: 'home', chars: { yuqing: 'happy' }, cat: false },
+  { speaker: '雨晴', text: '你看你看！這隻！異國短毛貓！\n好可愛喔，而且價格看起來很合理！', yuqing: 'happy' },
+  {
+    type: 'choice',
+    text: '我怎麼回應她？',
+    options: [
+      { text: '「真的很可愛！你要養嗎？」', next: 'ch1_support' },
+      { text: '「先查一下賣家評價吧。」', next: 'ch1_caution' }
+    ]
+  },
+
+  { id: 'ch1_support' },
+  { speaker: '我', text: '真的很可愛。這賣家有評價嗎？', yuqing: 'happy' },
+  { speaker: '雨晴', text: '（白了我一眼）\n你怎麼這麼現實。', yuqing: 'normal' },
+  { type: 'goto', target: 'ch1_continue' },
+
+  { id: 'ch1_caution' },
+  { speaker: '我', text: '等等，先查一下賣家評價吧，這個價格有點…', yuqing: 'normal' },
+  { speaker: '雨晴', text: '（根本沒在聽）\n你看牠的毛色！好漂亮喔——', yuqing: 'happy' },
+  { type: 'goto', target: 'ch1_continue' },
+
+  { id: 'ch1_continue' },
+  { bg: 'shop_page', chars: { yuqing: 'normal' }, cat: false },
   { speaker: '（旁白）', text: '網路上有一間叫做「星空貓舍」的賣家\n發布了一則貼文——' },
   { speaker: '林 詐欺', text: '出售純種異國短毛貓，CFA認證血統書，\n健康擔保，只要 $18,000！', seller: 'sly' },
-  { speaker: '雨晴', text: '（心跳加速）\n…就是牠了。', player: 'happy' },
+  { speaker: '雨晴', text: '（心跳加速）\n…就是牠了。', yuqing: 'happy' },
+  { speaker: '（旁白）', text: '我還沒說出口的擔心，\n被她閃閃發光的眼神淹沒了。' },
 
   // ── Chapter 2 ──
   { type: 'chapter', num: 'Chapter 02', title: '小圓的到來', sub: '但幸福有時很短暫…' },
-  { bg: 'living_room', chars: { player: 'happy' }, cat: 'sick' },
-  { speaker: '（旁白）', text: '三天後，紙箱送到了妳家門口。\n裡面是一隻小小的、圓圓的、橘白色的貓。', player: 'happy' },
-  { speaker: '雨晴', text: '啊……好可愛。\n我叫妳小圓，好嗎？', player: 'happy' },
-  { speaker: '（旁白）', text: '但第二天，妳發現小圓幾乎不動，\n眼睛半閉著，呼吸有點急促。', player: 'sad' },
-  { speaker: '雨晴', text: '小圓？小圓妳怎麼了……？\n妳昨晚還有喝水嗎？', player: 'sad' },
-
-  // 選項
+  { bg: 'living_room', chars: { yuqing: 'happy' }, cat: 'sick' },
+  { speaker: '（旁白）', text: '三天後，紙箱送到了雨晴家門口。\n她傳了照片給我——\n一隻小小的、圓圓的、橘白色的貓。' },
+  { speaker: '雨晴', text: '（傳訊息）我叫她小圓！\n她好可愛，你下課要來看她嗎？', yuqing: 'happy' },
+  { speaker: '（旁白）', text: '但第二天，雨晴突然打電話來。\n聲音有一點不對。' },
+  { speaker: '雨晴', text: '小圓……她幾乎不動，\n眼睛半閉著，呼吸好急促。\n我不知道怎麼辦……', yuqing: 'sad' },
   {
     type: 'choice',
-    text: '妳應該怎麼做？',
+    text: '我該怎麼做？',
     options: [
-      { text: '馬上帶去動物醫院', next: 'vet_route' },
-      { text: '先聯絡賣家林詐欺', next: 'seller_route' }
+      { text: '「我現在過去，我們去動物醫院。」', next: 'vet_route' },
+      { text: '「先打電話問賣家狀況。」', next: 'seller_route' }
     ]
   },
 
   // ── Seller route ──
   { id: 'seller_route' },
-  { bg: 'living_room', chars: { player: 'angry', seller: 'sly' }, cat: 'sick' },
-  { speaker: '雨晴', text: '你好，我前幾天買了妳家的貓，\n牠現在狀況不太對……', player: 'angry' },
+  { bg: 'living_room', chars: { yuqing: 'angry', seller: 'sly' }, cat: 'sick' },
+  { speaker: '（旁白）', text: '雨晴照我說的，先聯絡了賣家。' },
   { speaker: '林 詐欺', text: '喔——貓咪剛換環境都這樣啦，\n應激反應，正常的正常的。', seller: 'sly' },
-  { speaker: '雨晴', text: '但牠呼吸好快……', player: 'sad' },
-  { speaker: '林 詐欺', text: '多給牠一點空間，幾天就好了。\n不用大驚小怪。', seller: 'sly' },
-  { speaker: '（旁白）', text: '…妳不安的感覺沒有消失。\n最後還是決定帶小圓去醫院。' },
+  { speaker: '雨晴', text: '（傳訊息給我）\n他說正常的…但我感覺不太對。', yuqing: 'sad' },
+  { speaker: '我', text: '他在敷衍你。先去醫院，問清楚再說。' },
+  { speaker: '雨晴', text: '……好。', yuqing: 'normal' },
   { type: 'goto', target: 'vet_route' },
 
   // ── Vet route ──
   { id: 'vet_route' },
-  { bg: 'vet', chars: { player: 'sad', vet: true }, cat: 'sick' },
-  { speaker: '（旁白）', text: '妳衝進了附近的動物醫院。\n王獸醫皺起眉頭，仔細檢查了小圓。' },
+  { bg: 'vet', chars: { yuqing: 'sad', vet: true }, cat: 'sick' },
+  { speaker: '（旁白）', text: '我騎車去接雨晴，一起衝進了動物醫院。\n王獸醫皺起眉頭，仔細檢查了小圓。' },
   { speaker: '王 獸醫', text: '…這隻貓有嚴重的上呼吸道感染，\n還有輕微的心臟雜音。', vet: true },
-  { speaker: '雨晴', text: '什麼？但賣家說有健康擔保……', player: 'angry' },
+  { speaker: '雨晴', text: '什麼？但賣家說有健康擔保……', yuqing: 'angry' },
   { speaker: '王 獸醫', text: '這種程度的症狀不可能是剛開始的，\n牠在購買前就已經生病了。', vet: true },
-  { speaker: '（旁白）', text: '妳握緊了包包，那筆 $18,000，\n不是買了一隻「健康的貓」，\n而是買了別人的謊言。', player: 'angry' },
+  { speaker: '（旁白）', text: '雨晴握緊了包包。\n我站在她旁邊，說不出話來。\n那筆 $18,000，不是買了一隻健康的貓，\n而是買了別人精心包裝的謊言。' },
 
   // ── Chapter 3 ──
   { type: 'chapter', num: 'Chapter 03', title: '調查開始', sub: '憤怒，是行動的開始' },
-  { bg: 'home', chars: { player: 'determined' }, cat: false },
-  { speaker: '（旁白）', text: '妳開始收集所有證據：\n轉帳紀錄、對話截圖、診斷報告。', player: 'determined' },
-  { speaker: '雨晴', text: '（對著電腦螢幕）\n林詐欺……我查過了，你在三個論壇都有帳號。\n還有其他受害者。', player: 'determined' },
-  { speaker: '（旁白）', text: '妳加入了一個「寵物詐欺受害者自救會」，\n找到了另外五名受害者，情況幾乎一模一樣。' },
-  { speaker: '雨晴', text: '我們要一起去報警。\n一個人可以被推說是誤會，\n六個人，就是證據。', player: 'determined' },
+  { bg: 'home', chars: { yuqing: 'determined' }, cat: false },
+  { speaker: '（旁白）', text: '那天晚上，我留在雨晴家。\n她開始收集所有證據：\n轉帳紀錄、對話截圖、診斷報告。' },
+  { speaker: '雨晴', text: '林詐欺……我查過了，\n他在三個論壇都有帳號，\n還有其他受害者。', yuqing: 'determined' },
+  { speaker: '我', text: '那我們找到他們，一起去報警。' },
+  { speaker: '雨晴', text: '（抬起頭，看著我）\n……你說「我們」。', yuqing: 'normal' },
+  { speaker: '我', text: '你一個人面對這種事，\n我沒辦法假裝不知道。' },
+  { speaker: '（旁白）', text: '雨晴沉默了一會兒。\n然後轉回電腦，繼續打字。\n但我注意到，她的肩膀放鬆了一點。' },
+  { speaker: '雨晴', text: '我加入了「寵物詐欺受害者自救會」，\n找到了另外五名受害者。\n一個人可以被推說是誤會，\n六個人，就是證據。', yuqing: 'determined' },
 
   // ── Chapter 4 ──
   { type: 'chapter', num: 'Chapter 04', title: '警局備案', sub: '法律的齒輪，緩慢但有力' },
-  { bg: 'police', chars: { player: 'determined', police: true }, cat: false },
+  { bg: 'police', chars: { yuqing: 'determined', police: true }, cat: false },
   { speaker: '陳 警官', text: '你們帶來的資料很完整。\n轉帳紀錄、診斷書、對話截圖都有，\n這是很有力的詐欺罪證據。', police: true },
-  { speaker: '雨晴', text: '那他會被起訴嗎？', player: 'determined' },
+  { speaker: '雨晴', text: '那他會被起訴嗎？', yuqing: 'determined' },
   { speaker: '陳 警官', text: '我們會先進行約談。\n根據《刑法》339條，詐欺罪可處五年以下有期徒刑。\n你們的情況，很可能走到起訴。', police: true },
-  { speaker: '（旁白）', text: '約談當天，林詐欺被帶進警局。\n這是他第一次，臉上沒有那種油滑的笑。', player: 'determined' },
+  { speaker: '（旁白）', text: '走出警局的時候，\n雨晴深吸了一口氣，閉上眼睛。' },
+  { speaker: '雨晴', text: '謝謝你陪我來。', yuqing: 'normal' },
+  {
+    type: 'choice',
+    text: '我說……',
+    options: [
+      { text: '「這種事，不是應該的嗎。」', next: 'ch4_cool' },
+      { text: '「只要你沒事，就好了。」', next: 'ch4_warm' }
+    ]
+  },
+
+  { id: 'ch4_cool' },
+  { speaker: '我', text: '這種事，不是應該的嗎。', yuqing: 'normal' },
+  { speaker: '雨晴', text: '（笑了出來）\n你這個人真的……', yuqing: 'happy' },
+  { type: 'goto', target: 'ch4_continue' },
+
+  { id: 'ch4_warm' },
+  { speaker: '我', text: '只要你沒事，就好了。', yuqing: 'normal' },
+  { speaker: '雨晴', text: '（沉默片刻）\n……嗯。', yuqing: 'normal' },
+  { type: 'goto', target: 'ch4_continue' },
+
+  { id: 'ch4_continue' },
+  { speaker: '（旁白）', text: '約談當天，林詐欺被帶進警局。\n這是他第一次，臉上沒有那種油滑的笑。' },
 
   // ── Chapter 5 ──
   { type: 'chapter', num: 'Chapter 05', title: '法庭上的真相', sub: '那天，他的笑容終於消失了' },
-  { bg: 'courtroom', chars: { player: 'determined', seller: 'scared' }, cat: false },
-  { speaker: '（旁白）', text: '開庭那天，法院的燈光很白很亮。\n林詐欺坐在被告席，第一次直視妳的眼睛。', seller: 'scared' },
+  { bg: 'courtroom', chars: { yuqing: 'determined', seller: 'scared' }, cat: false },
+  { speaker: '（旁白）', text: '開庭那天，法院的燈光很白很亮。\n林詐欺坐在被告席，第一次直視雨晴的眼睛。' },
   { speaker: '林 詐欺', text: '……我，我只是生意做太大，\n沒想到貓咪的狀況會那麼差……', seller: 'scared' },
-  { speaker: '雨晴', text: '你明知道那些貓都病著。\n你賣了三年，受害者超過六十人。\n這不是「沒想到」，這是選擇。', player: 'determined' },
+  { speaker: '雨晴', text: '你明知道那些貓都病著。\n你賣了三年，受害者超過六十人。\n這不是「沒想到」，這是選擇。', yuqing: 'determined' },
   { speaker: '（旁白）', text: '法官審理後，認定詐欺罪成立。' },
   { flash: true },
-  { speaker: '（法官宣判）', text: '被告林○○，以詐欺罪，\n判處有期徒刑一年六個月，得易科罰金。\n此外，需賠償各受害者所受損失。', player: 'determined' },
-  { speaker: '（旁白）', text: '妳閉上眼睛，深呼吸。\n\n然後，微笑了。', player: 'happy' },
+  { speaker: '（法官宣判）', text: '被告林○○，以詐欺罪，\n判處有期徒刑一年六個月，得易科罰金。\n此外，需賠償各受害者所受損失。' },
+  { speaker: '（旁白）', text: '雨晴閉上眼睛，深呼吸。\n\n然後，微笑了。', yuqing: 'happy' },
 
   // ── Epilogue ──
   { type: 'chapter', num: 'Epilogue', title: '小圓，現在很好', sub: '— 正義，遲到但終將到來 —' },
-  { bg: 'living_room', chars: { player: 'happy' }, cat: 'healthy' },
-  { speaker: '（旁白）', text: '三個月後，小圓已經完全康復。\n她會在早晨跳上妳的膝蓋，\n用小小的爪子踩奶。', player: 'happy' },
-  { speaker: '雨晴', text: '（輕輕撫摸小圓）\n我說到了吧，會沒事的。', player: 'happy' },
-  { speaker: '（旁白）', text: '妳把這段經歷整理成了文章，\n發佈在論壇上，告訴每一個\n正在考慮購買寵物的人——', player: 'happy' },
-  { speaker: '雨晴', text: '帶牠們回家之前，\n先帶牠們去體檢。\n\n還有，相信妳自己的直覺。', player: 'determined' },
+  { bg: 'living_room', chars: { yuqing: 'happy' }, cat: 'healthy' },
+  { speaker: '（旁白）', text: '三個月後，小圓已經完全康復。\n她會在早晨跳上雨晴的膝蓋，\n用小小的爪子踩奶。' },
+  { speaker: '雨晴', text: '（輕輕撫摸小圓）\n我說到了吧，會沒事的。', yuqing: 'happy' },
+  { speaker: '（旁白）', text: '雨晴把這段經歷整理成了文章，\n發佈在論壇上，告訴每一個\n正在考慮購買寵物的人——' },
+  { speaker: '雨晴', text: '帶牠們回家之前，\n先帶牠們去體檢。\n\n還有，相信自己的直覺。', yuqing: 'determined' },
+  { speaker: '（旁白）', text: '我看著她認真打字的側臉，\n想起那天晚上，她肩膀放鬆的樣子。\n\n不知道，是從什麼時候開始的。' },
+  { speaker: '我', text: '雨晴。', yuqing: 'normal' },
+  { speaker: '雨晴', text: '嗯？', yuqing: 'normal' },
+  { speaker: '我', text: '……沒事。繼續寫吧。', yuqing: 'happy' },
+  { speaker: '（旁白）', text: '小圓從鍵盤上踩了過去，\n把雨晴正在打的句子搞砸了。\n\n雨晴笑著說了一聲「啊——」\n\n我決定，說出口的事，\n可以等下次。' },
   { type: 'ending' }
 ];
 
@@ -994,7 +1044,7 @@ function skipTyping(text, target) {
 }
 
 function updateCharacters(charConfig) {
-  const chars = ['player', 'seller', 'vet', 'police'];
+  const chars = ['yuqing', 'seller', 'vet', 'police'];
   chars.forEach(id => {
     const el_c = el('char-' + id);
     if (!el_c) return;
@@ -1015,7 +1065,7 @@ function updateCharacters(charConfig) {
 }
 
 function updateCharExpressions(step) {
-  const expMap = { player: step.player, seller: step.seller, vet: step.vet, police: step.police };
+  const expMap = { yuqing: step.yuqing, seller: step.seller, vet: step.vet, police: step.police };
   Object.entries(expMap).forEach(([id, exp]) => {
     if (exp === undefined) return;
     const c = el('char-' + id);
