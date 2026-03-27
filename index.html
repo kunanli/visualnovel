@@ -428,10 +428,10 @@
     <div class="title-paw">🐾</div>
     <div class="title-deco">VISUAL NOVEL</div>
     <div id="main-title">謊言與<br>毛球</div>
-    <div id="main-subtitle">— 她的貓，她的謊言，還有我 —</div>
+    <div id="main-subtitle">— 那隻貓，知道所有秘密 —</div>
     <button id="start-btn" onclick="startGame()">開始故事</button>
     <div style="font-size:11px; color:rgba(255,255,255,0.2); margin-top:20px; letter-spacing:2px;">點擊對話可繼續</div>
-    <div style="font-size:10px; color:rgba(247,168,208,0.3); letter-spacing:2px;">v10</div>
+    <div style="font-size:10px; color:rgba(247,168,208,0.3); letter-spacing:2px;">v11</div>
   </div>
 
   <!-- 場景背景 -->
@@ -463,6 +463,7 @@
   <!-- 角色立繪 -->
   <div id="characters">
     <div class="character hidden" id="char-yuqing"></div>
+    <div class="character hidden" id="char-rin"></div>
     <div class="character hidden" id="char-seller"></div>
     <div class="character hidden" id="char-vet"></div>
     <div class="character hidden" id="char-police"></div>
@@ -486,13 +487,13 @@
 
   <!-- 結局畫面 -->
   <div id="ending-screen">
-    <div id="ending-badge">TRUE ENDING</div>
-    <div id="ending-title">正義，遲到<br>但終將到來</div>
+    <div id="ending-badge">ENDING</div>
+    <div id="ending-title">那隻貓，<br>完成了任務</div>
     <div id="ending-desc">
-      林詐欺以詐欺罪被判有期徒刑一年六個月<br>
-      小圓在悉心治療後，逐漸恢復了健康<br>
-      而妳，學會了用法律守護自己<br>
-      也守護了每一個無辜的毛孩子
+      「星空集團」走私案正式移送法辦<br>
+      失蹤的李明，平安現身<br>
+      而小橘，找到了她真正的家<br>
+      還有，說出口之前的那些話
     </div>
     <button id="restart-btn" onclick="location.reload()">再讀一遍</button>
   </div>
@@ -714,6 +715,78 @@ function makePoliceSVG() {
   </svg>`;
 }
 
+function makeRinSVG(expression = 'neutral') {
+  const eyes = {
+    neutral: `<path d="M64 83 Q72 78 80 83" stroke="#1e2a42" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+              <ellipse cx="72" cy="87" rx="5.5" ry="5" fill="#1e2a42"/>
+              <ellipse cx="72" cy="87" rx="4" ry="3.8" fill="#2a4070"/>
+              <circle cx="74" cy="85" r="1.5" fill="white"/>
+              <path d="M120 83 Q128 78 136 83" stroke="#1e2a42" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+              <ellipse cx="128" cy="87" rx="5.5" ry="5" fill="#1e2a42"/>
+              <ellipse cx="128" cy="87" rx="4" ry="3.8" fill="#2a4070"/>
+              <circle cx="130" cy="85" r="1.5" fill="white"/>`,
+    smile:   `<path d="M64 82 Q72 76 80 82" stroke="#1e2a42" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+              <ellipse cx="72" cy="86" rx="5.5" ry="6" fill="#1e2a42"/>
+              <ellipse cx="72" cy="86" rx="4" ry="4.5" fill="#2a4070"/>
+              <circle cx="74" cy="83" r="1.5" fill="white"/>
+              <path d="M120 82 Q128 76 136 82" stroke="#1e2a42" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+              <ellipse cx="128" cy="86" rx="5.5" ry="6" fill="#1e2a42"/>
+              <ellipse cx="128" cy="86" rx="4" ry="4.5" fill="#2a4070"/>
+              <circle cx="130" cy="83" r="1.5" fill="white"/>`,
+    serious: `<line x1="62" y1="81" x2="80" y2="79" stroke="#1e2a42" stroke-width="2.2"/>
+              <ellipse cx="72" cy="86" rx="5.5" ry="4.5" fill="#1e2a42"/>
+              <ellipse cx="72" cy="86" rx="4" ry="3.2" fill="#1a3060"/>
+              <circle cx="74" cy="84" r="1.2" fill="white"/>
+              <line x1="120" y1="79" x2="138" y2="81" stroke="#1e2a42" stroke-width="2.2"/>
+              <ellipse cx="128" cy="86" rx="5.5" ry="4.5" fill="#1e2a42"/>
+              <ellipse cx="128" cy="86" rx="4" ry="3.2" fill="#1a3060"/>
+              <circle cx="130" cy="84" r="1.2" fill="white"/>`,
+    soft:    `<path d="M65 84 Q72 79 79 84" stroke="#1e2a42" stroke-width="2" fill="none" stroke-linecap="round"/>
+              <ellipse cx="72" cy="88" rx="5" ry="4.5" fill="#1e2a42"/>
+              <ellipse cx="72" cy="88" rx="3.8" ry="3.5" fill="#2a4070"/>
+              <circle cx="74" cy="86" r="1.5" fill="white"/>
+              <path d="M121 84 Q128 79 135 84" stroke="#1e2a42" stroke-width="2" fill="none" stroke-linecap="round"/>
+              <ellipse cx="128" cy="88" rx="5" ry="4.5" fill="#1e2a42"/>
+              <ellipse cx="128" cy="88" rx="3.8" ry="3.5" fill="#2a4070"/>
+              <circle cx="130" cy="86" r="1.5" fill="white"/>`
+  };
+  const mouths = {
+    neutral: `<path d="M92 108 Q100 112 108 108" stroke="#c08868" stroke-width="1.5" fill="none" stroke-linecap="round"/>`,
+    smile:   `<path d="M88 105 Q100 116 112 105" stroke="#c08868" stroke-width="2" fill="none" stroke-linecap="round"/>`,
+    serious: `<line x1="90" y1="110" x2="110" y2="110" stroke="#c08868" stroke-width="1.5" stroke-linecap="round"/>`,
+    soft:    `<path d="M90 108 Q100 114 110 108" stroke="#c08868" stroke-width="1.8" fill="none" stroke-linecap="round"/>`
+  };
+  const exp = expression in eyes ? expression : 'neutral';
+  return `<svg viewBox="0 0 200 340" xmlns="http://www.w3.org/2000/svg" class="char-svg">
+    <ellipse cx="100" cy="68" rx="52" ry="58" fill="#1e2a42"/>
+    <rect x="86" y="128" width="28" height="32" rx="6" fill="#f0d4b8"/>
+    <rect x="48" y="154" width="104" height="145" rx="20" fill="#f0f4f8"/>
+    <rect x="48" y="154" width="104" height="44" rx="20" fill="#e2ecf6"/>
+    <rect x="88" y="128" width="24" height="36" rx="4" fill="#1e2a42"/>
+    <path d="M88 150 L100 166 L112 150" fill="#1e2a42"/>
+    <path d="M84 156 L100 178 L76 164 Z" fill="#f0f4f8"/>
+    <path d="M116 156 L100 178 L124 164 Z" fill="#f0f4f8"/>
+    <path d="M80 190 Q100 200 120 190" stroke="#7090b0" stroke-width="2.5" fill="none"/>
+    <circle cx="100" cy="201" r="7" fill="#5070a0" opacity="0.75"/>
+    <rect x="118" y="174" width="20" height="22" rx="3" fill="#dce8f4"/>
+    <rect x="14" y="160" width="38" height="88" rx="16" fill="#f0f4f8"/>
+    <rect x="148" y="160" width="38" height="88" rx="16" fill="#f0f4f8"/>
+    <ellipse cx="100" cy="90" rx="46" ry="50" fill="#f0d4b8"/>
+    <ellipse cx="100" cy="48" rx="50" ry="28" fill="#1e2a42"/>
+    <path d="M52 62 Q62 34 100 31 Q138 34 148 62 Q132 48 100 46 Q70 48 52 62Z" fill="#1e2a42"/>
+    <path d="M52 62 Q56 78 62 92 Q54 78 52 62Z" fill="#1e2a42"/>
+    <ellipse cx="54" cy="92" rx="10" ry="12" fill="#f0d4b8"/>
+    <ellipse cx="146" cy="92" rx="10" ry="12" fill="#f0d4b8"/>
+    ${eyes[exp]}
+    <ellipse cx="100" cy="100" rx="3" ry="2" fill="#d4a888"/>
+    ${mouths[exp]}
+    <rect x="66" y="287" width="28" height="50" rx="12" fill="#e0e8f4"/>
+    <rect x="106" y="287" width="28" height="50" rx="12" fill="#e0e8f4"/>
+    <rect x="60" y="328" width="36" height="12" rx="6" fill="#1e2a42"/>
+    <rect x="104" y="328" width="36" height="12" rx="6" fill="#1e2a42"/>
+  </svg>`;
+}
+
 function makeCatSVG(healthy = false) {
   const eyeColor = healthy ? '#6ab04c' : '#d0a0a0';
   const furColor = healthy ? '#c8b4a0' : '#c0a898';
@@ -768,6 +841,7 @@ function renderChar(id, expression) {
     if (url) return `<img src="${url}" style="height:100%;width:auto;display:block;object-fit:contain;object-position:bottom center" draggable="false">`;
   }
   if (id === 'yuqing')  return makePlayerSVG(expression || 'normal');
+  if (id === 'rin')     return makeRinSVG(expression || 'neutral');
   if (id === 'seller')  return makeSellerSVG(expression || 'normal');
   if (id === 'vet')     return makeVetSVG();
   if (id === 'police')  return makePoliceSVG();
@@ -808,6 +882,10 @@ const ASSETS = {
       // angry:      'images/player_angry.png',
       // determined: 'images/player_determined.png',
     },
+    // rin: {
+    //   neutral: 'images/rin_neutral.png',
+    //   smile:   'images/rin_smile.png',
+    // },
     // seller: {
     //   sly:        'images/seller_sly.png',
     //   scared:     'images/seller_scared.png',
@@ -844,138 +922,153 @@ function makeBgCSS(scene) {
 //   遊戲腳本
 // ═══════════════════════════════════════════════════════
 const SCRIPT = [
-  // ── Chapter 1 ──
-  { type: 'chapter', num: 'Chapter 01', title: '夢想中的毛孩子', sub: '她一直想養一隻貓…' },
+
+  // ══════════════════════════════════════
+  // ── 序章：深夜的相遇 ──
+  // ══════════════════════════════════════
+  { type: 'chapter', num: '序章', title: '深夜的相遇', sub: '— 那隻貓，知道所有秘密 —' },
   { bg: 'home', chars: {}, cat: false },
-  { speaker: '（旁白）', text: '那天下課後，雨晴拉著我去她家。\n說是有「超重要的事情」要讓我看。' },
-  { bg: 'home', chars: { yuqing: 'happy' }, cat: false },
-  { speaker: '雨晴', text: '你看你看！這隻！異國短毛貓！\n好可愛喔，而且價格看起來很合理！', yuqing: 'happy' },
-  {
-    type: 'choice',
-    text: '我怎麼回應她？',
-    options: [
-      { text: '「真的很可愛！你要養嗎？」', next: 'ch1_support' },
-      { text: '「先查一下賣家評價吧。」', next: 'ch1_caution' }
-    ]
-  },
+  { speaker: '（旁白）', text: '那是一個下著細雨的深夜。\n我剛結束加班，抄捷徑走過公園。' },
+  { bg: 'home', chars: {}, cat: 'sick' },
+  { speaker: '（旁白）', text: '草叢裡，傳來一聲微弱的叫聲。\n是一隻橘白色的小貓——\n受傷了，身上掛著一把舊鑰匙和一張字條。' },
+  { speaker: '（字條）', text: '「如果你找到她，請幫我找到真相。\n她知道所有秘密。\n鑰匙是入口。\n\n——李明」' },
+  { speaker: '我', text: '……什麼意思？' },
+  { speaker: '（旁白）', text: '我不知道「李明」是誰。\n但那雙半閉的眼睛看著我，\n我沒辦法就這樣走掉。' },
 
-  { id: 'ch1_support' },
-  { speaker: '我', text: '真的很可愛。這賣家有評價嗎？', yuqing: 'happy' },
-  { speaker: '雨晴', text: '（白了我一眼）\n你怎麼這麼現實。', yuqing: 'normal' },
-  { type: 'goto', target: 'ch1_continue' },
+  // ══════════════════════════════════════
+  // ── Chapter 1：夜光動物醫院 ──
+  // ══════════════════════════════════════
+  { type: 'chapter', num: 'Chapter 01', title: '夜光動物醫院', sub: '冰冷外表，和那雙穩定的手' },
+  { bg: 'vet', chars: { rin: 'neutral' }, cat: 'sick' },
+  { speaker: '（旁白）', text: '我衝進了最近的 24 小時動物醫院。\n接待我的，是一個看起來不太歡迎我的年輕醫生。' },
+  { speaker: '謝 凜', text: '現在是凌晨兩點。', rin: 'neutral' },
+  { speaker: '我', text: '我知道。但牠受傷了。' },
+  { speaker: '謝 凜', text: '……把牠放這裡。', rin: 'serious' },
+  { speaker: '（旁白）', text: '他沒有多說什麼，立刻開始檢查。\n動作很快，很穩。\n這個人，不是在敷衍我。' },
+  { speaker: '謝 凜', text: '外傷、輕微脫水、有應激反應。\n不是太嚴重。你來得及時。', rin: 'neutral' },
+  { speaker: '我', text: '……謝謝你。' },
+  { speaker: '謝 凜', text: '你是她的主人嗎？', rin: 'neutral' },
+  { speaker: '我', text: '不是。我在公園撿到她的。\n她身上有一張字條和一把鑰匙。' },
+  { speaker: '謝 凜', text: '（停頓片刻）\n……明白了。', rin: 'soft' },
 
-  { id: 'ch1_caution' },
-  { speaker: '我', text: '等等，先查一下賣家評價吧，這個價格有點…', yuqing: 'normal' },
-  { speaker: '雨晴', text: '（根本沒在聽）\n你看牠的毛色！好漂亮喔——', yuqing: 'happy' },
-  { type: 'goto', target: 'ch1_continue' },
-
-  { id: 'ch1_continue' },
+  // ══════════════════════════════════════
+  // ── Chapter 2：橘色時光 ──
+  // ══════════════════════════════════════
+  { type: 'chapter', num: 'Chapter 02', title: '橘色時光', sub: '那隻貓，認識的人' },
+  { bg: 'home', chars: {}, cat: 'healthy' },
+  { speaker: '（旁白）', text: '小橘——我暫時這樣叫她——\n在我家住了三天後，恢復了元氣。\n那把鑰匙，還有那張字條，一直讓我想不通。' },
+  { speaker: '（旁白）', text: '我在貓咪論壇搜尋「李明」，\n找到了一個帳號，總是在一間咖啡廳打卡——\n「橘色時光」。' },
   { bg: 'shop_page', chars: { yuqing: 'normal' }, cat: false },
-  { speaker: '（旁白）', text: '網路上有一間叫做「星空貓舍」的賣家\n發布了一則貼文——' },
-  { speaker: '林 詐欺', text: '出售純種異國短毛貓，CFA認證血統書，\n健康擔保，只要 $18,000！', seller: 'sly' },
-  { speaker: '雨晴', text: '（心跳加速）\n…就是牠了。', yuqing: 'happy' },
-  { speaker: '（旁白）', text: '我還沒說出口的擔心，\n被她閃閃發光的眼神淹沒了。' },
+  { speaker: '（旁白）', text: '那間咖啡廳的工讀生，\n看到小橘的照片，愣住了。' },
+  { speaker: '雨晴', text: '……這是小橘。\n這是明哥的貓。', yuqing: 'normal' },
+  { speaker: '我', text: '你認識她的主人？' },
+  { speaker: '雨晴', text: '他是我的前輩。一個調查記者。\n三個月前，他失蹤了。', yuqing: 'sad' },
+  { speaker: '（旁白）', text: '她抬起頭看著我，\n眼神裡有擔心，也有一絲戒備。' },
+  { speaker: '雨晴', text: '你是誰？你為什麼有小橘？', yuqing: 'normal' },
+  { speaker: '我', text: '我在公園撿到她的。\n李明留了一張字條，說要我「找到真相」。\n那把鑰匙……你知道它開什麼嗎？' },
+  { speaker: '雨晴', text: '（深呼吸）\n……你願意幫我找他嗎？', yuqing: 'sad' },
 
-  // ── Chapter 2 ──
-  { type: 'chapter', num: 'Chapter 02', title: '小圓的到來', sub: '但幸福有時很短暫…' },
-  { bg: 'living_room', chars: { yuqing: 'happy' }, cat: 'sick' },
-  { speaker: '（旁白）', text: '三天後，紙箱送到了雨晴家門口。\n她傳了照片給我——\n一隻小小的、圓圓的、橘白色的貓。' },
-  { speaker: '雨晴', text: '（傳訊息）我叫她小圓！\n她好可愛，你下課要來看她嗎？', yuqing: 'happy' },
-  { speaker: '（旁白）', text: '但第二天，雨晴突然打電話來。\n聲音有一點不對。' },
-  { speaker: '雨晴', text: '小圓……她幾乎不動，\n眼睛半閉著，呼吸好急促。\n我不知道怎麼辦……', yuqing: 'sad' },
+  // 選擇——路線分歧
   {
     type: 'choice',
-    text: '我該怎麼做？',
+    text: '我決定先從哪裡追查？',
     options: [
-      { text: '「我現在過去，我們去動物醫院。」', next: 'vet_route' },
-      { text: '「先打電話問賣家狀況。」', next: 'seller_route' }
+      { text: '「跟你一起，從咖啡廳查起。」', next: 'yuqing_route' },
+      { text: '「我先去問那個幫小橘看診的醫生。」', next: 'rin_route' }
     ]
   },
 
-  // ── Seller route ──
-  { id: 'seller_route' },
-  { bg: 'living_room', chars: { yuqing: 'angry', seller: 'sly' }, cat: 'sick' },
-  { speaker: '（旁白）', text: '雨晴照我說的，先聯絡了賣家。' },
-  { speaker: '林 詐欺', text: '喔——貓咪剛換環境都這樣啦，\n應激反應，正常的正常的。', seller: 'sly' },
-  { speaker: '雨晴', text: '（傳訊息給我）\n他說正常的…但我感覺不太對。', yuqing: 'sad' },
-  { speaker: '我', text: '他在敷衍你。先去醫院，問清楚再說。' },
-  { speaker: '雨晴', text: '……好。', yuqing: 'normal' },
-  { type: 'goto', target: 'vet_route' },
+  // ══════════════════════════════════════
+  // ── 雨晴路線 ──
+  // ══════════════════════════════════════
+  { id: 'yuqing_route' },
+  { type: 'chapter', num: 'Chapter 03', title: '明哥的角落', sub: '雨晴 ✦ — 咖啡廳裡的秘密' },
+  { bg: 'shop_page', chars: { yuqing: 'determined' }, cat: false },
+  { speaker: '（旁白）', text: '雨晴帶我去咖啡廳角落——\n一張靠窗的小桌，明哥固定坐的位置。' },
+  { speaker: '雨晴', text: '他失蹤前一週，說在追一個很大的題材。\n但他沒告訴我是什麼。', yuqing: 'normal' },
+  { speaker: '我', text: '那把鑰匙，你見過嗎？' },
+  { speaker: '雨晴', text: '（盯著鑰匙）\n……見過。他常拿著它發呆，\n說是「最重要的東西的入口」。', yuqing: 'normal' },
+  { speaker: '（旁白）', text: '我們在桌底發現了一行塗鴉暗語。\n對照鑰匙的形狀——是地下儲藏室的鎖。' },
+  { speaker: '雨晴', text: '（小聲）那裡，平常不對外開放……', yuqing: 'sad' },
+  { speaker: '（旁白）', text: '鑰匙轉動的瞬間，我們都屏住了呼吸。\n裡面有一個防水小盒子——\n筆記本、USB，還有一封信。' },
+  { speaker: '雨晴', text: '（顫抖著聲音）\n這是明哥的字跡……', yuqing: 'sad' },
 
-  // ── Vet route ──
-  { id: 'vet_route' },
-  { bg: 'vet', chars: { yuqing: 'sad', vet: true }, cat: 'sick' },
-  { speaker: '（旁白）', text: '我騎車去接雨晴，一起衝進了動物醫院。\n王獸醫皺起眉頭，仔細檢查了小圓。' },
-  { speaker: '王 獸醫', text: '…這隻貓有嚴重的上呼吸道感染，\n還有輕微的心臟雜音。', vet: true },
-  { speaker: '雨晴', text: '什麼？但賣家說有健康擔保……', yuqing: 'angry' },
-  { speaker: '王 獸醫', text: '這種程度的症狀不可能是剛開始的，\n牠在購買前就已經生病了。', vet: true },
-  { speaker: '（旁白）', text: '雨晴握緊了包包。\n我站在她旁邊，說不出話來。\n那筆 $18,000，不是買了一隻健康的貓，\n而是買了別人精心包裝的謊言。' },
+  { type: 'chapter', num: 'Chapter 04', title: '夜晚的筆記本', sub: '拼湊謎題，也拼湊距離' },
+  { bg: 'home', chars: { yuqing: 'determined' }, cat: 'healthy' },
+  { speaker: '（旁白）', text: '咖啡廳打烊後，我們回到我家整理筆記本。\n小橘安靜坐在我們中間，像在守護什麼。' },
+  { speaker: '雨晴', text: '「星空」——這個名字出現了很多次。\n表面是寵物店，背後是走私前哨。\n明哥追到了幕後的人……但名字被塗掉了。', yuqing: 'determined' },
+  { speaker: '我', text: '他在保護這份資料，才失蹤的吧。' },
+  { speaker: '雨晴', text: '……我知道。\n所以我不能讓他白白消失。', yuqing: 'determined' },
+  { speaker: '（旁白）', text: '就在這時——\n窗外，有人影一閃而過。' },
+  { speaker: '雨晴', text: '（低聲）有人跟蹤我們……？', yuqing: 'sad' },
+  { speaker: '我', text: '把燈關掉。先別動。' },
+  { speaker: '（旁白）', text: '黑暗裡，她靠近了我一點。\n我們屏住呼吸，等待人影離去。\n那一刻，我清楚感覺到——\n她在顫抖。' },
+  { speaker: '雨晴', text: '……謝謝你沒有走。', yuqing: 'normal' },
 
-  // ── Chapter 3 ──
-  { type: 'chapter', num: 'Chapter 03', title: '調查開始', sub: '憤怒，是行動的開始' },
-  { bg: 'home', chars: { yuqing: 'determined' }, cat: false },
-  { speaker: '（旁白）', text: '那天晚上，我留在雨晴家。\n她開始收集所有證據：\n轉帳紀錄、對話截圖、診斷報告。' },
-  { speaker: '雨晴', text: '林詐欺……我查過了，\n他在三個論壇都有帳號，\n還有其他受害者。', yuqing: 'determined' },
-  { speaker: '我', text: '那我們找到他們，一起去報警。' },
-  { speaker: '雨晴', text: '（抬起頭，看著我）\n……你說「我們」。', yuqing: 'normal' },
-  { speaker: '我', text: '你一個人面對這種事，\n我沒辦法假裝不知道。' },
-  { speaker: '（旁白）', text: '雨晴沉默了一會兒。\n然後轉回電腦，繼續打字。\n但我注意到，她的肩膀放鬆了一點。' },
-  { speaker: '雨晴', text: '我加入了「寵物詐欺受害者自救會」，\n找到了另外五名受害者。\n一個人可以被推說是誤會，\n六個人，就是證據。', yuqing: 'determined' },
-
-  // ── Chapter 4 ──
-  { type: 'chapter', num: 'Chapter 04', title: '警局備案', sub: '法律的齒輪，緩慢但有力' },
+  { type: 'chapter', num: 'Chapter 05', title: '她等的人，回來了', sub: '— 真相，終於回到了光裡 —' },
   { bg: 'police', chars: { yuqing: 'determined', police: true }, cat: false },
-  { speaker: '陳 警官', text: '你們帶來的資料很完整。\n轉帳紀錄、診斷書、對話截圖都有，\n這是很有力的詐欺罪證據。', police: true },
-  { speaker: '雨晴', text: '那他會被起訴嗎？', yuqing: 'determined' },
-  { speaker: '陳 警官', text: '我們會先進行約談。\n根據《刑法》339條，詐欺罪可處五年以下有期徒刑。\n你們的情況，很可能走到起訴。', police: true },
-  { speaker: '（旁白）', text: '走出警局的時候，\n雨晴深吸了一口氣，閉上眼睛。' },
-  { speaker: '雨晴', text: '謝謝你陪我來。', yuqing: 'normal' },
-  {
-    type: 'choice',
-    text: '我說……',
-    options: [
-      { text: '「這種事，不是應該的嗎。」', next: 'ch4_cool' },
-      { text: '「只要你沒事，就好了。」', next: 'ch4_warm' }
-    ]
-  },
-
-  { id: 'ch4_cool' },
-  { speaker: '我', text: '這種事，不是應該的嗎。', yuqing: 'normal' },
-  { speaker: '雨晴', text: '（笑了出來）\n你這個人真的……', yuqing: 'happy' },
-  { type: 'goto', target: 'ch4_continue' },
-
-  { id: 'ch4_warm' },
-  { speaker: '我', text: '只要你沒事，就好了。', yuqing: 'normal' },
-  { speaker: '雨晴', text: '（沉默片刻）\n……嗯。', yuqing: 'normal' },
-  { type: 'goto', target: 'ch4_continue' },
-
-  { id: 'ch4_continue' },
-  { speaker: '（旁白）', text: '約談當天，林詐欺被帶進警局。\n這是他第一次，臉上沒有那種油滑的笑。' },
-
-  // ── Chapter 5 ──
-  { type: 'chapter', num: 'Chapter 05', title: '法庭上的真相', sub: '那天，他的笑容終於消失了' },
-  { bg: 'courtroom', chars: { yuqing: 'determined', seller: 'scared' }, cat: false },
-  { speaker: '（旁白）', text: '開庭那天，法院的燈光很白很亮。\n林詐欺坐在被告席，第一次直視雨晴的眼睛。' },
-  { speaker: '林 詐欺', text: '……我，我只是生意做太大，\n沒想到貓咪的狀況會那麼差……', seller: 'scared' },
-  { speaker: '雨晴', text: '你明知道那些貓都病著。\n你賣了三年，受害者超過六十人。\n這不是「沒想到」，這是選擇。', yuqing: 'determined' },
-  { speaker: '（旁白）', text: '法官審理後，認定詐欺罪成立。' },
+  { speaker: '（旁白）', text: '我們把所有資料交給了陳警官。' },
+  { speaker: '陳 警官', text: '這份調查記錄很完整。\n「星空集團」的案件，我們有辦法了。', police: true },
   { flash: true },
-  { speaker: '（法官宣判）', text: '被告林○○，以詐欺罪，\n判處有期徒刑一年六個月，得易科罰金。\n此外，需賠償各受害者所受損失。' },
-  { speaker: '（旁白）', text: '雨晴閉上眼睛，深呼吸。\n\n然後，微笑了。', yuqing: 'happy' },
+  { speaker: '（旁白）', text: '兩週後，新聞播報了「星空集團」的瓦解。\n還有一個記者，從藏身處重新現身的消息。' },
+  { bg: 'shop_page', chars: { yuqing: 'happy' }, cat: 'healthy' },
+  { speaker: '（旁白）', text: '李明走進咖啡廳時，\n雨晴哭著站了起來。\n小橘從我懷裡跳下去，直直衝向他。' },
+  { speaker: '雨晴', text: '你這個大笨蛋——\n消失了三個月，連小橘都扔掉——！', yuqing: 'happy' },
+  { speaker: '（旁白）', text: '後來，咖啡廳又安靜了下來。\n就我們兩個，還有小橘。\n窗外是入夜的城市。' },
+  { speaker: '雨晴', text: '……你叫什麼名字。\n我還不知道。', yuqing: 'normal' },
+  { speaker: '我', text: '（告訴了她）' },
+  { speaker: '雨晴', text: '（輕輕笑了）\n……記住了。', yuqing: 'happy' },
+  { speaker: '（旁白）', text: '小橘跳上桌，踩在我們中間，\n用額頭蹭了蹭雨晴的手。\n\n然後回頭看了我一眼，\n好像在說：「你還不快點？」' },
+  { type: 'ending' },
 
-  // ── Epilogue ──
-  { type: 'chapter', num: 'Epilogue', title: '小圓，現在很好', sub: '— 正義，遲到但終將到來 —' },
-  { bg: 'living_room', chars: { yuqing: 'happy' }, cat: 'healthy' },
-  { speaker: '（旁白）', text: '三個月後，小圓已經完全康復。\n她會在早晨跳上雨晴的膝蓋，\n用小小的爪子踩奶。' },
-  { speaker: '雨晴', text: '（輕輕撫摸小圓）\n我說到了吧，會沒事的。', yuqing: 'happy' },
-  { speaker: '（旁白）', text: '雨晴把這段經歷整理成了文章，\n發佈在論壇上，告訴每一個\n正在考慮購買寵物的人——' },
-  { speaker: '雨晴', text: '帶牠們回家之前，\n先帶牠們去體檢。\n\n還有，相信自己的直覺。', yuqing: 'determined' },
-  { speaker: '（旁白）', text: '我看著她認真打字的側臉，\n想起那天晚上，她肩膀放鬆的樣子。\n\n不知道，是從什麼時候開始的。' },
-  { speaker: '我', text: '雨晴。', yuqing: 'normal' },
-  { speaker: '雨晴', text: '嗯？', yuqing: 'normal' },
-  { speaker: '我', text: '……沒事。繼續寫吧。', yuqing: 'happy' },
-  { speaker: '（旁白）', text: '小圓從鍵盤上踩了過去，\n把雨晴正在打的句子搞砸了。\n\n雨晴笑著說了一聲「啊——」\n\n我決定，說出口的事，\n可以等下次。' },
+  // ══════════════════════════════════════
+  // ── 謝凜路線 ──
+  // ══════════════════════════════════════
+  { id: 'rin_route' },
+  { type: 'chapter', num: 'Chapter 03', title: '夜光醫院的秘密', sub: '謝凜 ✧ — 他一個人追查了兩年' },
+  { bg: 'vet', chars: { rin: 'neutral' }, cat: 'healthy' },
+  { speaker: '（旁白）', text: '我帶著小橘回到夜光動物醫院。\n謝凜看到我，略微皺了眉頭。' },
+  { speaker: '謝 凜', text: '你又來了。', rin: 'neutral' },
+  { speaker: '我', text: '我想問你一件事。\n最近，有沒有收治過來歷不明、症狀奇怪的貓？' },
+  { speaker: '謝 凜', text: '（停頓）\n……你為什麼這樣問？', rin: 'serious' },
+  { speaker: '我', text: '這隻貓的前主人留下了一張字條，\n說她「知道真相」。\n還有這把鑰匙。' },
+  { speaker: '謝 凜', text: '（看著鑰匙，沉默很長一段時間）\n……進來。', rin: 'serious' },
+  { bg: 'vet', chars: { rin: 'serious' }, cat: false },
+  { speaker: '謝 凜', text: '這三個月，我接診了十一隻來歷不明的貓。\n症狀模式完全一樣。\n我一直在追查。', rin: 'serious' },
+  { speaker: '我', text: '你一個人？' },
+  { speaker: '謝 凜', text: '沒有人信我。\n他們說我想太多。', rin: 'neutral' },
+  { speaker: '謝 凜', text: '……那把鑰匙，我見過同款式的。\n是倉庫某批舊置物箱的鎖。\n那批箱子是前任員工留下的，沒有人動過。', rin: 'neutral' },
+
+  { type: 'chapter', num: 'Chapter 04', title: '連夜的追查', sub: '昏黃燈光下，冰冷的距離縮短了' },
+  { bg: 'vet', chars: { rin: 'neutral' }, cat: false },
+  { speaker: '（旁白）', text: '置物箱裡，是密密麻麻的調查記錄。\n同一個名字反覆出現——「星空」。' },
+  { speaker: '謝 凜', text: '一個利用寵物店的走私集團。\n他們進的貓，有的病著，有的被用來運藥。\n最後大部分都……', rin: 'serious' },
+  { speaker: '（旁白）', text: '他沒有說完。\n但我懂了。' },
+  { speaker: '我', text: '你追這件事多久了？' },
+  { speaker: '謝 凜', text: '（低聲）\n……兩年。', rin: 'neutral' },
+  { speaker: '我', text: '為什麼？' },
+  { speaker: '謝 凜', text: '（停頓很久）\n……我養了十二年的貓，就是這樣死的。', rin: 'soft' },
+  { speaker: '（旁白）', text: '深夜，我們並排坐在昏黃的倉庫燈下整理資料。\n不知道從什麼時候開始，氣氛變了。\n\n然後，警報聲響了。\n有人闖入了醫院後門。' },
+  { speaker: '謝 凜', text: '跟我來。', rin: 'serious' },
+  { speaker: '（旁白）', text: '他拉著我的手腕，穿過走廊，\n躲進了一間暗診間。\n\n呼吸聲交疊在一起。\n他的手，沒有放開。' },
+  { speaker: '謝 凜', text: '（極低聲）\n……沒事的。', rin: 'soft' },
+
+  { type: 'chapter', num: 'Chapter 05', title: '清晨的診療台', sub: '— 那隻貓，完成了她的任務 —' },
+  { bg: 'police', chars: { rin: 'neutral', police: true }, cat: false },
+  { speaker: '（旁白）', text: '我們把所有資料交給了陳警官。\n那個人連夜被捕，「星空集團」的調查正式展開。' },
+  { speaker: '陳 警官', text: '你們兩個，保留好聯繫方式。\n後續可能需要你們配合說明。', police: true },
+  { flash: true },
+  { speaker: '（旁白）', text: '清晨的醫院，安靜得像水底。\n謝凜在替小橘做最後一次健康检查，\n我坐在診療台旁邊看著。' },
+  { bg: 'vet', chars: { rin: 'soft' }, cat: 'healthy' },
+  { speaker: '謝 凜', text: '她很健康了。\n（停頓）\n如果她的主人找到了，就可以還給他。', rin: 'soft' },
+  { speaker: '我', text: '如果主人一直找不到呢？' },
+  { speaker: '謝 凜', text: '（輕輕抬起頭）\n那就……留下來吧。', rin: 'smile' },
+  { speaker: '（旁白）', text: '小橘從診療台上站起來，\n用腦袋蹭了蹭凜的手，再蹭我的。\n\n凜看著這一幕，\n第一次，真正笑了。' },
+  { speaker: '謝 凜', text: '……你明天，還會來嗎。', rin: 'soft' },
+  { speaker: '我', text: '……嗯。', rin: 'smile' },
+  { speaker: '（旁白）', text: '清晨的光從窗子透進來。\n小橘在診療台上打了一個哈欠，\n閉上了眼睛。\n\n任務完成了，小橘。' },
   { type: 'ending' }
+
 ];
 
 // ═══════════════════════════════════════════════════════
@@ -1044,7 +1137,7 @@ function skipTyping(text, target) {
 }
 
 function updateCharacters(charConfig) {
-  const chars = ['yuqing', 'seller', 'vet', 'police'];
+  const chars = ['yuqing', 'rin', 'seller', 'vet', 'police'];
   chars.forEach(id => {
     const el_c = el('char-' + id);
     if (!el_c) return;
@@ -1065,7 +1158,7 @@ function updateCharacters(charConfig) {
 }
 
 function updateCharExpressions(step) {
-  const expMap = { yuqing: step.yuqing, seller: step.seller, vet: step.vet, police: step.police };
+  const expMap = { yuqing: step.yuqing, rin: step.rin, seller: step.seller, vet: step.vet, police: step.police };
   Object.entries(expMap).forEach(([id, exp]) => {
     if (exp === undefined) return;
     const c = el('char-' + id);
@@ -1205,11 +1298,11 @@ async function advanceScript() {
 
       // Dim/activate characters
       const speakers = {
-        '雨晴': 'player', '林 詐欺': 'seller',
-        '王 獸醫': 'vet', '陳 警官': 'police'
+        '雨晴': 'yuqing', '謝 凜': 'rin',
+        '林 詐欺': 'seller', '陳 警官': 'police', '王 獸醫': 'vet'
       };
       const activeSpeaker = speakers[step.speaker];
-      ['player', 'seller', 'vet', 'police'].forEach(id => {
+      ['yuqing', 'rin', 'seller', 'vet', 'police'].forEach(id => {
         const c = el('char-' + id);
         if (c.classList.contains('hidden')) return;
         if (activeSpeaker === id) {
@@ -1222,10 +1315,12 @@ async function advanceScript() {
       // Name color
       const nameColors = {
         '雨晴': 'var(--accent)',
+        '謝 凜': '#7ab0e0',
         '林 詐欺': '#a0d870',
         '王 獸醫': 'var(--accent2)',
         '陳 警官': 'var(--gold)',
         '（旁白）': 'var(--subtext)',
+        '（字條）': '#d4b870',
         '（法官宣判）': 'var(--gold)'
       };
       const nc = el('speaker-name');
