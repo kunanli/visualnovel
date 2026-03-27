@@ -427,6 +427,7 @@
     <div id="main-subtitle">— 一隻貓與一場騙局 —</div>
     <button id="start-btn" onclick="startGame()">開始故事</button>
     <div style="font-size:11px; color:rgba(255,255,255,0.2); margin-top:20px; letter-spacing:2px;">點擊對話可繼續</div>
+    <div style="font-size:10px; color:rgba(247,168,208,0.3); letter-spacing:2px;">v3</div>
   </div>
 
   <!-- 場景背景 -->
@@ -930,6 +931,7 @@ const SCRIPT = [
 let scriptIndex = 0;
 let isTyping = false;
 let typeTimer = null;
+let typeResolve = null;
 let waitingForClick = false;
 let jumpTo = null;
 
@@ -953,6 +955,7 @@ function showChapter(num, title, sub) {
 
 function typeText(text, target) {
   return new Promise(resolve => {
+    typeResolve = resolve;
     target.innerHTML = '';
     let i = 0;
     isTyping = true;
@@ -968,6 +971,7 @@ function typeText(text, target) {
       } else {
         clearInterval(typeTimer);
         isTyping = false;
+        typeResolve = null;
         target.innerHTML += '<span class="cursor"></span>';
         el('click-hint').classList.add('show');
         resolve();
@@ -982,6 +986,7 @@ function skipTyping(text, target) {
   let html = text.replace(/\n/g, '<br>') + '<span class="cursor"></span>';
   target.innerHTML = html;
   el('click-hint').classList.add('show');
+  if (typeResolve) { typeResolve(); typeResolve = null; }
 }
 
 function updateCharacters(charConfig) {
