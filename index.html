@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>謊言與毛球 — 視覺小說</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&family=Noto+Sans+TC:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0a1e;
+    --panel: rgba(18,12,40,0.92);
+    --accent: #f7a8d0;
+    --accent2: #a8c4f7;
+    --gold: #f7d98a;
+    --danger: #f76a6a;
+    --text: #f0e8ff;
+    --subtext: #b8aad4;
+    --border: rgba(247,168,208,0.25);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    font-family: 'Noto Sans TC', sans-serif;
+    width: 100vw; height: 100vh;
+    overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* ── 星空背景 ── */
+  #stars {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background:
+      radial-gradient(ellipse at 20% 50%, rgba(100,60,180,0.18) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 20%, rgba(60,100,200,0.15) 0%, transparent 50%);
+  }
+
+  /* ── 遊戲容器 ── */
+  #game {
+    position: relative;
+    width: min(900px, 100vw);
+    height: min(600px, 100vh);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 0 80px rgba(180,100,240,0.25), 0 0 200px rgba(60,40,120,0.4);
+    z-index: 1;
+  }
+
+  /* ── 場景背景 ── */
+  #scene-bg {
+    position: absolute; inset: 0;
+    background-size: cover; background-position: center;
+    transition: all 0.6s ease;
+  }
+
+  #scene-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to bottom, transparent 40%, rgba(8,5,20,0.85) 100%);
+  }
+
+  /* ── 角色立繪區 ── */
+  #characters {
+    position: absolute;
+    bottom: 160px; left: 0; right: 0;
+    height: 360px;
+    display: flex; align-items: flex-end; justify-content: center;
+    gap: 40px;
+    pointer-events: none;
+  }
+
+  .character {
+    width: 200px; height: 340px;
+    position: relative;
+    transition: all 0.5s ease;
+    filter: drop-shadow(0 8px 24px rgba(0,0,0,0.6));
+  }
+
+  .character.hidden { opacity: 0; transform: translateY(20px); }
+  .character.active { filter: drop-shadow(0 8px 24px rgba(0,0,0,0.6)) brightness(1.1); }
+  .character.dimmed { filter: drop-shadow(0 8px 24px rgba(0,0,0,0.6)) brightness(0.5) saturate(0.4); }
+
+  .char-svg {
+    width: 100%; height: 100%;
+  }
+
+  /* ── 貓咪立繪 ── */
+  #cat-display {
+    position: absolute;
+    bottom: 155px; right: 60px;
+    width: 120px; height: 120px;
+    transition: all 0.5s ease;
+    filter: drop-shadow(0 4px 12px rgba(247,168,208,0.4));
+  }
+  #cat-display.hidden { opacity: 0; transform: scale(0.8); }
+
+  /* ── 對話框 ── */
+  #dialog-box {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 160px;
+    background: var(--panel);
+    border-top: 1px solid var(--border);
+    backdrop-filter: blur(20px);
+    padding: 16px 24px 16px;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+
+  #dialog-box::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent), var(--accent2), transparent);
+  }
+
+  #speaker-name {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 2px;
+    min-height: 20px;
+    text-shadow: 0 0 12px rgba(247,168,208,0.5);
+  }
+
+  #dialog-text {
+    font-size: 15px;
+    line-height: 1.8;
+    color: var(--text);
+    flex: 1;
+    white-space: pre-wrap;
+  }
+
+  #dialog-text .cursor {
+    display: inline-block;
+    width: 2px; height: 14px;
+    background: var(--accent);
+    margin-left: 2px;
+    vertical-align: middle;
+    animation: blink 0.8s infinite;
+  }
+
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+  /* ── 點擊提示 ── */
+  #click-hint {
+    position: absolute;
+    bottom: 12px; right: 20px;
+    font-size: 11px;
+    color: var(--subtext);
+    opacity: 0;
+    transition: opacity 0.5s;
+    display: flex; align-items: center; gap: 6px;
+  }
+  #click-hint.show { opacity: 1; animation: bounce 1s infinite; }
+  @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-3px)} }
+
+  /* ── 選項按鈕 ── */
+  #choices {
+    position: absolute;
+    bottom: 170px; left: 50%;
+    transform: translateX(-50%);
+    display: flex; flex-direction: column; gap: 10px;
+    width: 480px;
+    z-index: 10;
+  }
+
+  .choice-btn {
+    background: rgba(18,10,40,0.88);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 24px;
+    color: var(--text);
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: left;
+    backdrop-filter: blur(10px);
+    transition: all 0.2s ease;
+    position: relative; overflow: hidden;
+  }
+
+  .choice-btn::before {
+    content: '▶';
+    color: var(--accent);
+    margin-right: 10px;
+    font-size: 10px;
+    transition: transform 0.2s;
+  }
+
+  .choice-btn:hover {
+    border-color: var(--accent);
+    background: rgba(247,168,208,0.1);
+    transform: translateX(4px);
+    box-shadow: 0 0 16px rgba(247,168,208,0.2);
+  }
+
+  /* ── 場景章節標題 ── */
+  #chapter-card {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 16px;
+    background: rgba(8,5,20,0.92);
+    z-index: 20;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.8s ease;
+  }
+  #chapter-card.show { opacity: 1; pointer-events: all; }
+
+  #chapter-num {
+    font-size: 11px;
+    letter-spacing: 6px;
+    color: var(--accent);
+    text-transform: uppercase;
+  }
+
+  #chapter-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 32px;
+    color: var(--text);
+    letter-spacing: 4px;
+    text-align: center;
+  }
+
+  #chapter-line {
+    width: 80px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  }
+
+  #chapter-sub {
+    font-size: 13px;
+    color: var(--subtext);
+    letter-spacing: 2px;
+  }
+
+  /* ── 頂部 HUD ── */
+  #hud {
+    position: absolute;
+    top: 16px; left: 20px; right: 20px;
+    display: flex; justify-content: space-between; align-items: center;
+    z-index: 5; pointer-events: none;
+  }
+
+  #game-title-hud {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 12px;
+    color: rgba(247,168,208,0.5);
+    letter-spacing: 3px;
+  }
+
+  #progress-indicator {
+    font-size: 11px;
+    color: var(--subtext);
+    letter-spacing: 1px;
+  }
+
+  /* ── 情緒指示條 ── */
+  #emotion-bar {
+    position: absolute;
+    top: 16px; left: 50%;
+    transform: translateX(-50%);
+    display: flex; gap: 6px; align-items: center;
+    z-index: 5;
+  }
+
+  .emo-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    transition: all 0.4s;
+  }
+  .emo-dot.active { background: var(--accent); box-shadow: 0 0 6px var(--accent); }
+
+  /* ── 畫面閃白效果 ── */
+  #flash {
+    position: absolute; inset: 0;
+    background: white;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 30;
+    transition: opacity 0.15s;
+  }
+
+  /* ── 結局畫面 ── */
+  #ending-screen {
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, #0d0a1e, #1a0830);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 24px;
+    z-index: 40;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 1.5s ease;
+  }
+  #ending-screen.show { opacity: 1; pointer-events: all; }
+
+  #ending-badge {
+    font-size: 11px;
+    letter-spacing: 6px;
+    color: var(--gold);
+    text-shadow: 0 0 16px rgba(247,217,138,0.6);
+  }
+
+  #ending-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 36px;
+    color: var(--text);
+    text-align: center;
+    line-height: 1.4;
+  }
+
+  #ending-desc {
+    font-size: 13px;
+    color: var(--subtext);
+    text-align: center;
+    max-width: 400px;
+    line-height: 2;
+  }
+
+  #restart-btn {
+    margin-top: 16px;
+    padding: 12px 36px;
+    border: 1px solid var(--accent);
+    border-radius: 4px;
+    background: transparent;
+    color: var(--accent);
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 13px;
+    letter-spacing: 3px;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  #restart-btn:hover {
+    background: rgba(247,168,208,0.1);
+    box-shadow: 0 0 20px rgba(247,168,208,0.3);
+  }
+
+  /* ── 開始畫面 ── */
+  #title-screen {
+    position: absolute; inset: 0;
+    background: linear-gradient(160deg, #0a0718 0%, #150d2e 50%, #0a0a1a 100%);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 20px;
+    z-index: 50;
+    transition: opacity 1s ease;
+  }
+
+  #title-screen.fade-out { opacity: 0; pointer-events: none; }
+
+  .title-deco {
+    font-size: 11px;
+    letter-spacing: 8px;
+    color: var(--accent);
+    opacity: 0.7;
+  }
+
+  #main-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 44px;
+    color: var(--text);
+    letter-spacing: 6px;
+    text-align: center;
+    text-shadow: 0 0 30px rgba(247,168,208,0.4);
+    line-height: 1.3;
+  }
+
+  #main-subtitle {
+    font-size: 13px;
+    color: var(--subtext);
+    letter-spacing: 3px;
+  }
+
+  #start-btn {
+    margin-top: 30px;
+    padding: 14px 48px;
+    border: 1px solid var(--accent);
+    border-radius: 4px;
+    background: rgba(247,168,208,0.06);
+    color: var(--accent);
+    font-family: 'Noto Serif TC', serif;
+    font-size: 15px;
+    letter-spacing: 4px;
+    cursor: pointer;
+    transition: all 0.3s;
+    backdrop-filter: blur(10px);
+  }
+
+  #start-btn:hover {
+    background: rgba(247,168,208,0.15);
+    box-shadow: 0 0 30px rgba(247,168,208,0.3);
+    transform: scale(1.03);
+  }
+
+  .title-paw {
+    font-size: 28px;
+    animation: float 3s ease-in-out infinite;
+  }
+  @keyframes float {
+    0%,100%{transform:translateY(0) rotate(-5deg)}
+    50%{transform:translateY(-8px) rotate(5deg)}
+  }
+
+  /* ── 場景淡入 ── */
+  @keyframes fadeInScene {
+    from { opacity: 0; transform: scale(1.03); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  .scene-enter { animation: fadeInScene 0.6s ease forwards; }
+</style>
+</head>
+<body>
+
+<div id="stars"></div>
+
+<div id="game">
+
+  <!-- 開始畫面 -->
+  <div id="title-screen">
+    <div class="title-paw">🐾</div>
+    <div class="title-deco">VISUAL NOVEL</div>
+    <div id="main-title">謊言與<br>毛球</div>
+    <div id="main-subtitle">— 一隻貓與一場騙局 —</div>
+    <button id="start-btn" onclick="startGame()">開始故事</button>
+    <div style="font-size:11px; color:rgba(255,255,255,0.2); margin-top:20px; letter-spacing:2px;">點擊對話可繼續</div>
+  </div>
+
+  <!-- 場景背景 -->
+  <div id="scene-bg"></div>
+  <div id="scene-overlay"></div>
+
+  <!-- HUD -->
+  <div id="hud">
+    <div id="game-title-hud">謊言與毛球</div>
+    <div id="progress-indicator"></div>
+  </div>
+
+  <div id="emotion-bar">
+    <div class="emo-dot" id="d1"></div>
+    <div class="emo-dot" id="d2"></div>
+    <div class="emo-dot" id="d3"></div>
+    <div class="emo-dot" id="d4"></div>
+    <div class="emo-dot" id="d5"></div>
+  </div>
+
+  <!-- 章節卡片 -->
+  <div id="chapter-card">
+    <div id="chapter-num"></div>
+    <div id="chapter-line"></div>
+    <div id="chapter-title"></div>
+    <div id="chapter-sub"></div>
+  </div>
+
+  <!-- 角色立繪 -->
+  <div id="characters">
+    <div class="character hidden" id="char-player"></div>
+    <div class="character hidden" id="char-seller"></div>
+    <div class="character hidden" id="char-vet"></div>
+    <div class="character hidden" id="char-police"></div>
+  </div>
+
+  <!-- 貓咪 -->
+  <div id="cat-display" class="hidden"></div>
+
+  <!-- 對話框 -->
+  <div id="dialog-box" onclick="handleClick()">
+    <div id="speaker-name"></div>
+    <div id="dialog-text"></div>
+    <div id="click-hint">▼ 點擊繼續</div>
+  </div>
+
+  <!-- 選項 -->
+  <div id="choices"></div>
+
+  <!-- 閃白 -->
+  <div id="flash"></div>
+
+  <!-- 結局畫面 -->
+  <div id="ending-screen">
+    <div id="ending-badge">TRUE ENDING</div>
+    <div id="ending-title">正義，遲到<br>但終將到來</div>
+    <div id="ending-desc">
+      林詐欺以詐欺罪被判有期徒刑一年六個月<br>
+      小圓在悉心治療後，逐漸恢復了健康<br>
+      而妳，學會了用法律守護自己<br>
+      也守護了每一個無辜的毛孩子
+    </div>
+    <button id="restart-btn" onclick="location.reload()">再讀一遍</button>
+  </div>
+
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+//   SVG 角色立繪生成器
+// ═══════════════════════════════════════════════════════
+
+function makePlayerSVG(expression = 'normal') {
+  const eyes = {
+    normal: `<ellipse cx="72" cy="88" rx="5" ry="5.5" fill="#3a2a5a"/>
+             <ellipse cx="128" cy="88" rx="5" ry="5.5" fill="#3a2a5a"/>
+             <circle cx="73" cy="86" r="1.5" fill="white"/>
+             <circle cx="129" cy="86" r="1.5" fill="white"/>`,
+    happy: `<path d="M67 88 Q72 82 77 88" stroke="#3a2a5a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+            <path d="M123 88 Q128 82 133 88" stroke="#3a2a5a" stroke-width="2.5" fill="none" stroke-linecap="round"/>`,
+    angry: `<ellipse cx="72" cy="90" rx="5" ry="4.5" fill="#3a2a5a"/>
+            <ellipse cx="128" cy="90" rx="5" ry="4.5" fill="#3a2a5a"/>
+            <line x1="65" y1="83" x2="79" y2="87" stroke="#3a2a5a" stroke-width="2"/>
+            <line x1="121" y1="87" x2="135" y2="83" stroke="#3a2a5a" stroke-width="2"/>`,
+    sad: `<path d="M67 86 Q72 92 77 86" stroke="#3a2a5a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <path d="M123 86 Q128 92 133 86" stroke="#3a2a5a" stroke-width="2.5" fill="none" stroke-linecap="round"/>`,
+    determined: `<ellipse cx="72" cy="89" rx="5" ry="5" fill="#2a1a4a"/>
+                 <ellipse cx="128" cy="89" rx="5" ry="5" fill="#2a1a4a"/>
+                 <circle cx="74" cy="87" r="2" fill="white"/>
+                 <circle cx="130" cy="87" r="2" fill="white"/>
+                 <line x1="65" y1="82" x2="80" y2="85" stroke="#3a2a5a" stroke-width="2"/>
+                 <line x1="120" y1="85" x2="135" y2="82" stroke="#3a2a5a" stroke-width="2"/>`
+  };
+
+  const mouths = {
+    normal: `<path d="M90 106 Q100 110 110 106" stroke="#c87090" stroke-width="1.5" fill="none" stroke-linecap="round"/>`,
+    happy: `<path d="M88 104 Q100 114 112 104" stroke="#c87090" stroke-width="2" fill="none" stroke-linecap="round"/>`,
+    angry: `<path d="M88 110 Q100 104 112 110" stroke="#c87090" stroke-width="2" fill="none" stroke-linecap="round"/>`,
+    sad: `<path d="M90 110 Q100 104 110 110" stroke="#9070a0" stroke-width="1.5" fill="none" stroke-linecap="round"/>`,
+    determined: `<path d="M90 108 L110 108" stroke="#c87090" stroke-width="2" stroke-linecap="round"/>`
+  };
+
+  const exp = expression in eyes ? expression : 'normal';
+  return `<svg viewBox="0 0 200 340" xmlns="http://www.w3.org/2000/svg" class="char-svg">
+    <!-- 頭髮後層 -->
+    <ellipse cx="100" cy="70" rx="52" ry="58" fill="#2a1a4a"/>
+    <!-- 脖子 -->
+    <rect x="86" y="130" width="28" height="30" rx="6" fill="#f5c5a0"/>
+    <!-- 身體 -->
+    <rect x="52" y="155" width="96" height="140" rx="20" fill="#e8d4f0"/>
+    <!-- 衣服細節 -->
+    <rect x="52" y="155" width="96" height="50" rx="20" fill="#c4a8e0"/>
+    <circle cx="100" cy="175" r="4" fill="#a088c0"/>
+    <!-- 手臂 -->
+    <rect x="20" y="160" width="36" height="80" rx="16" fill="#e8d4f0"/>
+    <rect x="144" y="160" width="36" height="80" rx="16" fill="#e8d4f0"/>
+    <!-- 臉 -->
+    <ellipse cx="100" cy="95" rx="46" ry="50" fill="#f5c5a0"/>
+    <!-- 頭髮前層 -->
+    <ellipse cx="100" cy="52" rx="50" ry="30" fill="#2a1a4a"/>
+    <ellipse cx="58" cy="72" rx="16" ry="36" fill="#2a1a4a"/>
+    <ellipse cx="142" cy="72" rx="16" ry="36" fill="#2a1a4a"/>
+    <!-- 瀏海 -->
+    <path d="M55 65 Q68 38 100 35 Q132 38 145 65 Q130 52 100 50 Q70 52 55 65Z" fill="#2a1a4a"/>
+    <!-- 耳朵 -->
+    <ellipse cx="54" cy="95" rx="10" ry="12" fill="#f5c5a0"/>
+    <ellipse cx="146" cy="95" rx="10" ry="12" fill="#f5c5a0"/>
+    <!-- 眼睛 -->
+    ${eyes[exp]}
+    <!-- 鼻子 -->
+    <ellipse cx="100" cy="100" rx="3" ry="2" fill="#e0a0a0"/>
+    <!-- 嘴巴 -->
+    ${mouths[exp]}
+    <!-- 腮紅 -->
+    <ellipse cx="76" cy="104" rx="8" ry="5" fill="rgba(255,150,150,0.3)"/>
+    <ellipse cx="124" cy="104" rx="8" ry="5" fill="rgba(255,150,150,0.3)"/>
+    <!-- 腿 -->
+    <rect x="66" y="285" width="28" height="50" rx="12" fill="#e8d4f0"/>
+    <rect x="106" y="285" width="28" height="50" rx="12" fill="#e8d4f0"/>
+    <rect x="60" y="326" width="36" height="14" rx="7" fill="#8068a8"/>
+    <rect x="104" y="326" width="36" height="14" rx="7" fill="#8068a8"/>
+  </svg>`;
+}
+
+function makeSellerSVG(expression = 'normal') {
+  const eyes = {
+    normal: `<ellipse cx="72" cy="85" rx="5" ry="5" fill="#2a3a2a"/>
+             <ellipse cx="128" cy="85" rx="5" ry="5" fill="#2a3a2a"/>
+             <circle cx="74" cy="83" r="1.5" fill="white"/>
+             <circle cx="130" cy="83" r="1.5" fill="white"/>`,
+    sly: `<path d="M67 83 Q72 79 77 83 Q72 87 67 83Z" fill="#2a3a2a"/>
+          <path d="M123 83 Q128 79 133 83 Q128 87 123 83Z" fill="#2a3a2a"/>
+          <circle cx="72" cy="83" r="1.2" fill="white"/>
+          <circle cx="128" cy="83" r="1.2" fill="white"/>`,
+    scared: `<ellipse cx="72" cy="85" rx="6" ry="7" fill="#2a3a2a"/>
+             <ellipse cx="128" cy="85" rx="6" ry="7" fill="#2a3a2a"/>
+             <circle cx="72" cy="82" r="2.5" fill="white"/>
+             <circle cx="128" cy="82" r="2.5" fill="white"/>`,
+    panic: `<ellipse cx="72" cy="87" rx="7" ry="8" fill="#2a3a2a"/>
+            <ellipse cx="128" cy="87" rx="7" ry="8" fill="#2a3a2a"/>
+            <circle cx="72" cy="83" r="3" fill="white"/>
+            <circle cx="128" cy="83" r="3" fill="white"/>
+            <line x1="65" y1="78" x2="79" y2="80" stroke="#2a3a2a" stroke-width="2"/>
+            <line x1="121" y1="80" x2="135" y2="78" stroke="#2a3a2a" stroke-width="2"/>`
+  };
+  const mouths = {
+    normal: `<path d="M88 105 Q100 112 112 105" stroke="#a06060" stroke-width="2" fill="none" stroke-linecap="round"/>`,
+    sly: `<path d="M88 105 Q100 110 112 105" stroke="#a06060" stroke-width="2" fill="none" stroke-linecap="round"/>
+          <path d="M108 104 Q112 108 112 105" stroke="#a06060" stroke-width="1.5" fill="none"/>`,
+    scared: `<ellipse cx="100" cy="110" rx="10" ry="6" fill="#a06060" opacity="0.6"/>`,
+    panic: `<ellipse cx="100" cy="112" rx="12" ry="8" fill="#a06060" opacity="0.7"/>`
+  };
+  const exp = expression in eyes ? expression : 'normal';
+  const mexp = expression in mouths ? expression : 'normal';
+  return `<svg viewBox="0 0 200 340" xmlns="http://www.w3.org/2000/svg" class="char-svg">
+    <!-- 頭髮後 -->
+    <ellipse cx="100" cy="68" rx="50" ry="56" fill="#4a3a1a"/>
+    <!-- 脖子 -->
+    <rect x="86" y="128" width="28" height="30" rx="6" fill="#d4b890"/>
+    <!-- 身體 -->
+    <rect x="52" y="152" width="96" height="140" rx="20" fill="#c8d8b0"/>
+    <rect x="52" y="152" width="96" height="50" rx="20" fill="#a0b880"/>
+    <!-- 領帶/衣領 -->
+    <polygon points="96,170 104,170 100,200" fill="#607050"/>
+    <rect x="94" y="168" width="12" height="6" rx="3" fill="#80a060"/>
+    <!-- 手臂 -->
+    <rect x="20" y="158" width="36" height="80" rx="16" fill="#c8d8b0"/>
+    <rect x="144" y="158" width="36" height="80" rx="16" fill="#c8d8b0"/>
+    <!-- 臉 -->
+    <ellipse cx="100" cy="92" rx="46" ry="50" fill="#d4b890"/>
+    <!-- 頭髮前 -->
+    <ellipse cx="100" cy="50" rx="48" ry="28" fill="#4a3a1a"/>
+    <path d="M56 64 Q65 38 100 34 Q135 38 144 64 Q128 52 100 50 Q72 52 56 64Z" fill="#4a3a1a"/>
+    <!-- 耳朵 -->
+    <ellipse cx="54" cy="92" rx="10" ry="12" fill="#d4b890"/>
+    <ellipse cx="146" cy="92" rx="10" ry="12" fill="#d4b890"/>
+    <!-- 眼睛 -->
+    ${eyes[exp]}
+    <!-- 鼻子 -->
+    <ellipse cx="100" cy="98" rx="3" ry="2" fill="#c09070"/>
+    <!-- 嘴巴 -->
+    ${mouths[mexp]}
+    <!-- 腿 -->
+    <rect x="66" y="282" width="28" height="52" rx="12" fill="#c8d8b0"/>
+    <rect x="106" y="282" width="28" height="52" rx="12" fill="#c8d8b0"/>
+    <rect x="60" y="326" width="36" height="14" rx="7" fill="#607050"/>
+    <rect x="104" y="326" width="36" height="14" rx="7" fill="#607050"/>
+  </svg>`;
+}
+
+function makeVetSVG() {
+  return `<svg viewBox="0 0 200 340" xmlns="http://www.w3.org/2000/svg" class="char-svg">
+    <ellipse cx="100" cy="68" rx="50" ry="56" fill="#3a3a5a"/>
+    <rect x="86" y="128" width="28" height="30" rx="6" fill="#f0d0c0"/>
+    <rect x="52" y="152" width="96" height="140" rx="20" fill="#e8f0f8"/>
+    <rect x="52" y="152" width="96" height="50" rx="20" fill="#c8dff0"/>
+    <!-- 聽診器 -->
+    <path d="M80 185 Q100 195 120 185" stroke="#8090a0" stroke-width="2" fill="none"/>
+    <circle cx="100" cy="196" r="6" fill="#6080a0" opacity="0.8"/>
+    <!-- 十字徽章 -->
+    <rect x="92" y="165" width="16" height="16" rx="3" fill="white"/>
+    <rect x="95" y="168" width="10" height="4" rx="1" fill="#e06070"/>
+    <rect x="97.5" y="165.5" width="5" height="10" rx="1" fill="#e06070"/>
+    <!-- 手臂 -->
+    <rect x="20" y="158" width="36" height="80" rx="16" fill="#e8f0f8"/>
+    <rect x="144" y="158" width="36" height="80" rx="16" fill="#e8f0f8"/>
+    <ellipse cx="100" cy="92" rx="46" ry="50" fill="#f0d0c0"/>
+    <ellipse cx="100" cy="50" rx="48" ry="28" fill="#3a3a5a"/>
+    <path d="M56 64 Q65 38 100 34 Q135 38 144 64 Q128 52 100 50 Q72 52 56 64Z" fill="#3a3a5a"/>
+    <ellipse cx="54" cy="92" rx="10" ry="12" fill="#f0d0c0"/>
+    <ellipse cx="146" cy="92" rx="10" ry="12" fill="#f0d0c0"/>
+    <!-- 眼鏡 -->
+    <ellipse cx="72" cy="86" rx="14" ry="12" fill="none" stroke="#6a7a8a" stroke-width="2"/>
+    <ellipse cx="128" cy="86" rx="14" ry="12" fill="none" stroke="#6a7a8a" stroke-width="2"/>
+    <line x1="86" y1="86" x2="114" y2="86" stroke="#6a7a8a" stroke-width="1.5"/>
+    <!-- 眼睛（眼鏡後） -->
+    <ellipse cx="72" cy="87" rx="4.5" ry="5" fill="#3a3a5a"/>
+    <ellipse cx="128" cy="87" rx="4.5" ry="5" fill="#3a3a5a"/>
+    <circle cx="74" cy="85" r="1.5" fill="white"/>
+    <circle cx="130" cy="85" r="1.5" fill="white"/>
+    <ellipse cx="100" cy="100" rx="3" ry="2" fill="#d0a090"/>
+    <path d="M90 108 Q100 114 110 108" stroke="#b08080" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <rect x="66" y="282" width="28" height="52" rx="12" fill="#e8f0f8"/>
+    <rect x="106" y="282" width="28" height="52" rx="12" fill="#e8f0f8"/>
+    <rect x="60" y="326" width="36" height="14" rx="7" fill="#6080a0"/>
+    <rect x="104" y="326" width="36" height="14" rx="7" fill="#6080a0"/>
+  </svg>`;
+}
+
+function makePoliceSVG() {
+  return `<svg viewBox="0 0 200 340" xmlns="http://www.w3.org/2000/svg" class="char-svg">
+    <ellipse cx="100" cy="68" rx="50" ry="56" fill="#2a2a2a"/>
+    <!-- 警帽 -->
+    <ellipse cx="100" cy="46" rx="56" ry="14" fill="#2a3a5a"/>
+    <rect x="48" y="34" width="104" height="22" rx="4" fill="#344a6a"/>
+    <ellipse cx="100" cy="34" rx="40" ry="18" fill="#2a3a5a"/>
+    <!-- 帽徽 -->
+    <polygon points="100,20 104,30 114,30 106,36 109,46 100,40 91,46 94,36 86,30 96,30" fill="#f7d98a" opacity="0.9"/>
+    <rect x="86" y="128" width="28" height="30" rx="6" fill="#d4c0a8"/>
+    <rect x="52" y="152" width="96" height="140" rx="20" fill="#344a6a"/>
+    <rect x="52" y="152" width="96" height="50" rx="20" fill="#2a3a5a"/>
+    <!-- 警徽 -->
+    <polygon points="100,162 103,170 112,170 105,175 108,184 100,179 92,184 95,175 88,170 97,170" fill="#f7d98a" opacity="0.8"/>
+    <rect x="20" y="158" width="36" height="80" rx="16" fill="#344a6a"/>
+    <rect x="144" y="158" width="36" height="80" rx="16" fill="#344a6a"/>
+    <ellipse cx="100" cy="92" rx="46" ry="50" fill="#d4c0a8"/>
+    <ellipse cx="100" cy="50" rx="48" ry="28" fill="#2a2a2a"/>
+    <ellipse cx="54" cy="92" rx="10" ry="12" fill="#d4c0a8"/>
+    <ellipse cx="146" cy="92" rx="10" ry="12" fill="#d4c0a8"/>
+    <ellipse cx="72" cy="86" rx="5" ry="5.5" fill="#2a2a3a"/>
+    <ellipse cx="128" cy="86" rx="5" ry="5.5" fill="#2a2a3a"/>
+    <circle cx="74" cy="84" r="1.5" fill="white"/>
+    <circle cx="130" cy="84" r="1.5" fill="white"/>
+    <ellipse cx="100" cy="100" rx="3" ry="2" fill="#c0a090"/>
+    <path d="M90 108 Q100 113 110 108" stroke="#a08070" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <rect x="66" y="282" width="28" height="52" rx="12" fill="#344a6a"/>
+    <rect x="106" y="282" width="28" height="52" rx="12" fill="#344a6a"/>
+    <rect x="60" y="326" width="36" height="14" rx="7" fill="#1a2a3a"/>
+    <rect x="104" y="326" width="36" height="14" rx="7" fill="#1a2a3a"/>
+  </svg>`;
+}
+
+function makeCatSVG(healthy = false) {
+  const eyeColor = healthy ? '#6ab04c' : '#d0a0a0';
+  const furColor = healthy ? '#c8b4a0' : '#c0a898';
+  const noseColor = '#e08080';
+  return `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+    <!-- 尾巴 -->
+    <path d="M95 90 Q115 75 108 55" stroke="${furColor}" stroke-width="8" fill="none" stroke-linecap="round"/>
+    <!-- 身體 -->
+    <ellipse cx="60" cy="82" rx="38" ry="30" fill="${furColor}"/>
+    <!-- 頭 -->
+    <ellipse cx="60" cy="52" rx="34" ry="32" fill="${furColor}"/>
+    <!-- 耳朵 -->
+    <polygon points="30,28 24,8 44,22" fill="${furColor}"/>
+    <polygon points="33,26 28,12 42,22" fill="#e0b0b0"/>
+    <polygon points="90,28 96,8 76,22" fill="${furColor}"/>
+    <polygon points="87,26 92,12 78,22" fill="#e0b0b0"/>
+    <!-- 臉紋 -->
+    <ellipse cx="60" cy="55" rx="22" ry="20" fill="rgba(255,255,255,0.25)"/>
+    <!-- 眼睛 -->
+    ${healthy
+      ? `<ellipse cx="48" cy="48" rx="7" ry="8" fill="${eyeColor}"/>
+         <ellipse cx="72" cy="48" rx="7" ry="8" fill="${eyeColor}"/>
+         <ellipse cx="48" cy="48" rx="3" ry="6" fill="#1a1a2a"/>
+         <ellipse cx="72" cy="48" rx="3" ry="6" fill="#1a1a2a"/>
+         <circle cx="50" cy="45" r="2" fill="white"/><circle cx="74" cy="45" r="2" fill="white"/>`
+      : `<path d="M43 45 Q48 48 53 45" stroke="${eyeColor}" stroke-width="2" fill="none" stroke-linecap="round"/>
+         <path d="M67 45 Q72 48 77 45" stroke="${eyeColor}" stroke-width="2" fill="none" stroke-linecap="round"/>`
+    }
+    <!-- 鼻子 -->
+    <polygon points="60,57 56,62 64,62" fill="${noseColor}"/>
+    <!-- 嘴 -->
+    <path d="M56 62 Q60 66 64 62" stroke="${noseColor}" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+    <!-- 鬍鬚 -->
+    <line x1="26" y1="59" x2="50" y2="61" stroke="rgba(255,255,255,0.6)" stroke-width="1"/>
+    <line x1="26" y1="64" x2="50" y2="64" stroke="rgba(255,255,255,0.6)" stroke-width="1"/>
+    <line x1="70" y1="61" x2="94" y2="59" stroke="rgba(255,255,255,0.6)" stroke-width="1"/>
+    <line x1="70" y1="64" x2="94" y2="64" stroke="rgba(255,255,255,0.6)" stroke-width="1"/>
+    <!-- 腳 -->
+    <ellipse cx="42" cy="106" rx="12" ry="8" fill="${furColor}"/>
+    <ellipse cx="78" cy="106" rx="12" ry="8" fill="${furColor}"/>
+    ${healthy ? '' : '<ellipse cx="60" cy="52" rx="34" ry="32" fill="rgba(100,100,180,0.08)"/>'}
+  </svg>`;
+}
+
+// ═══════════════════════════════════════════════════════
+//   場景背景生成
+// ═══════════════════════════════════════════════════════
+function makeBgCSS(scene) {
+  const bgs = {
+    home: `linear-gradient(160deg, #1a1035 0%, #0d1a2e 50%, #0a0a1a 100%)`,
+    shop_page: `linear-gradient(160deg, #0d1a1a 0%, #0a1520 60%, #050d15 100%)`,
+    living_room: `linear-gradient(170deg, #1a1028 0%, #0d0820 70%, #050510 100%)`,
+    vet: `linear-gradient(160deg, #0d1a28 0%, #081520 60%, #050c15 100%)`,
+    police: `linear-gradient(160deg, #080d18 0%, #060a15 60%, #030510 100%)`,
+    courtroom: `linear-gradient(170deg, #180d08 0%, #100808 60%, #080404 100%)`,
+    dark: `linear-gradient(160deg, #050310 0%, #030208 100%)`,
+    ending: `linear-gradient(135deg, #0d0a1e, #1a0830)`
+  };
+  return bgs[scene] || bgs.home;
+}
+
+// ═══════════════════════════════════════════════════════
+//   遊戲腳本
+// ═══════════════════════════════════════════════════════
+const SCRIPT = [
+  // ── Chapter 1 ──
+  { type: 'chapter', num: 'Chapter 01', title: '夢想中的毛孩子', sub: '你一直想養一隻波斯貓…' },
+  { bg: 'home', chars: {}, cat: false },
+  { speaker: '（旁白）', text: '深夜，螢幕的藍光映在妳臉上。\n妳已經在貓咪論壇逛了三個小時了。', player: 'normal' },
+  { speaker: '雨晴', text: '啊！異國短毛貓！好可愛喔…\n而且價格好像很合理。', player: 'happy' },
+  { bg: 'shop_page', chars: { player: 'normal' }, cat: false },
+  { speaker: '（旁白）', text: '網路上有一間叫做「星空貓舍」的賣家\n發布了一則貼文——' },
+  { speaker: '林 詐欺', text: '出售純種異國短毛貓，CFA認證血統書，\n健康擔保，只要 $18,000！', seller: 'sly' },
+  { speaker: '雨晴', text: '（心跳加速）\n…就是牠了。', player: 'happy' },
+
+  // ── Chapter 2 ──
+  { type: 'chapter', num: 'Chapter 02', title: '小圓的到來', sub: '但幸福有時很短暫…' },
+  { bg: 'living_room', chars: { player: 'happy' }, cat: 'sick' },
+  { speaker: '（旁白）', text: '三天後，紙箱送到了妳家門口。\n裡面是一隻小小的、圓圓的、橘白色的貓。', player: 'happy' },
+  { speaker: '雨晴', text: '啊……好可愛。\n我叫妳小圓，好嗎？', player: 'happy' },
+  { speaker: '（旁白）', text: '但第二天，妳發現小圓幾乎不動，\n眼睛半閉著，呼吸有點急促。', player: 'sad' },
+  { speaker: '雨晴', text: '小圓？小圓妳怎麼了……？\n妳昨晚還有喝水嗎？', player: 'sad' },
+
+  // 選項
+  {
+    type: 'choice',
+    text: '妳應該怎麼做？',
+    options: [
+      { text: '馬上帶去動物醫院', next: 'vet_route' },
+      { text: '先聯絡賣家林詐欺', next: 'seller_route' }
+    ]
+  },
+
+  // ── Seller route ──
+  { id: 'seller_route' },
+  { bg: 'living_room', chars: { player: 'angry', seller: 'sly' }, cat: 'sick' },
+  { speaker: '雨晴', text: '你好，我前幾天買了妳家的貓，\n牠現在狀況不太對……', player: 'angry' },
+  { speaker: '林 詐欺', text: '喔——貓咪剛換環境都這樣啦，\n應激反應，正常的正常的。', seller: 'sly' },
+  { speaker: '雨晴', text: '但牠呼吸好快……', player: 'sad' },
+  { speaker: '林 詐欺', text: '多給牠一點空間，幾天就好了。\n不用大驚小怪。', seller: 'sly' },
+  { speaker: '（旁白）', text: '…妳不安的感覺沒有消失。\n最後還是決定帶小圓去醫院。' },
+  { type: 'goto', target: 'vet_route' },
+
+  // ── Vet route ──
+  { id: 'vet_route' },
+  { bg: 'vet', chars: { player: 'sad', vet: true }, cat: 'sick' },
+  { speaker: '（旁白）', text: '妳衝進了附近的動物醫院。\n王獸醫皺起眉頭，仔細檢查了小圓。' },
+  { speaker: '王 獸醫', text: '…這隻貓有嚴重的上呼吸道感染，\n還有輕微的心臟雜音。', vet: true },
+  { speaker: '雨晴', text: '什麼？但賣家說有健康擔保……', player: 'angry' },
+  { speaker: '王 獸醫', text: '這種程度的症狀不可能是剛開始的，\n牠在購買前就已經生病了。', vet: true },
+  { speaker: '（旁白）', text: '妳握緊了包包，那筆 $18,000，\n不是買了一隻「健康的貓」，\n而是買了別人的謊言。', player: 'angry' },
+
+  // ── Chapter 3 ──
+  { type: 'chapter', num: 'Chapter 03', title: '調查開始', sub: '憤怒，是行動的開始' },
+  { bg: 'home', chars: { player: 'determined' }, cat: false },
+  { speaker: '（旁白）', text: '妳開始收集所有證據：\n轉帳紀錄、對話截圖、診斷報告。', player: 'determined' },
+  { speaker: '雨晴', text: '（對著電腦螢幕）\n林詐欺……我查過了，你在三個論壇都有帳號。\n還有其他受害者。', player: 'determined' },
+  { speaker: '（旁白）', text: '妳加入了一個「寵物詐欺受害者自救會」，\n找到了另外五名受害者，情況幾乎一模一樣。' },
+  { speaker: '雨晴', text: '我們要一起去報警。\n一個人可以被推說是誤會，\n六個人，就是證據。', player: 'determined' },
+
+  // ── Chapter 4 ──
+  { type: 'chapter', num: 'Chapter 04', title: '警局備案', sub: '法律的齒輪，緩慢但有力' },
+  { bg: 'police', chars: { player: 'determined', police: true }, cat: false },
+  { speaker: '陳 警官', text: '你們帶來的資料很完整。\n轉帳紀錄、診斷書、對話截圖都有，\n這是很有力的詐欺罪證據。', police: true },
+  { speaker: '雨晴', text: '那他會被起訴嗎？', player: 'determined' },
+  { speaker: '陳 警官', text: '我們會先進行約談。\n根據《刑法》339條，詐欺罪可處五年以下有期徒刑。\n你們的情況，很可能走到起訴。', police: true },
+  { speaker: '（旁白）', text: '約談當天，林詐欺被帶進警局。\n這是他第一次，臉上沒有那種油滑的笑。', player: 'determined' },
+
+  // ── Chapter 5 ──
+  { type: 'chapter', num: 'Chapter 05', title: '法庭上的真相', sub: '那天，他的笑容終於消失了' },
+  { bg: 'courtroom', chars: { player: 'determined', seller: 'scared' }, cat: false },
+  { speaker: '（旁白）', text: '開庭那天，法院的燈光很白很亮。\n林詐欺坐在被告席，第一次直視妳的眼睛。', seller: 'scared' },
+  { speaker: '林 詐欺', text: '……我，我只是生意做太大，\n沒想到貓咪的狀況會那麼差……', seller: 'scared' },
+  { speaker: '雨晴', text: '你明知道那些貓都病著。\n你賣了三年，受害者超過六十人。\n這不是「沒想到」，這是選擇。', player: 'determined' },
+  { speaker: '（旁白）', text: '法官審理後，認定詐欺罪成立。' },
+  { flash: true },
+  { speaker: '（法官宣判）', text: '被告林○○，以詐欺罪，\n判處有期徒刑一年六個月，得易科罰金。\n此外，需賠償各受害者所受損失。', player: 'determined' },
+  { speaker: '（旁白）', text: '妳閉上眼睛，深呼吸。\n\n然後，微笑了。', player: 'happy' },
+
+  // ── Epilogue ──
+  { type: 'chapter', num: 'Epilogue', title: '小圓，現在很好', sub: '— 正義，遲到但終將到來 —' },
+  { bg: 'living_room', chars: { player: 'happy' }, cat: 'healthy' },
+  { speaker: '（旁白）', text: '三個月後，小圓已經完全康復。\n她會在早晨跳上妳的膝蓋，\n用小小的爪子踩奶。', player: 'happy' },
+  { speaker: '雨晴', text: '（輕輕撫摸小圓）\n我說到了吧，會沒事的。', player: 'happy' },
+  { speaker: '（旁白）', text: '妳把這段經歷整理成了文章，\n發佈在論壇上，告訴每一個\n正在考慮購買寵物的人——', player: 'happy' },
+  { speaker: '雨晴', text: '帶牠們回家之前，\n先帶牠們去體檢。\n\n還有，相信妳自己的直覺。', player: 'determined' },
+  { type: 'ending' }
+];
+
+// ═══════════════════════════════════════════════════════
+//   遊戲引擎
+// ═══════════════════════════════════════════════════════
+
+let scriptIndex = 0;
+let isTyping = false;
+let typeTimer = null;
+let waitingForClick = false;
+let jumpTo = null;
+
+const CHAR_DELAY = 38;
+
+function el(id) { return document.getElementById(id); }
+
+function showChapter(num, title, sub) {
+  return new Promise(resolve => {
+    const card = el('chapter-card');
+    el('chapter-num').textContent = num;
+    el('chapter-title').textContent = title;
+    el('chapter-sub').textContent = sub;
+    card.classList.add('show');
+    setTimeout(() => {
+      card.classList.remove('show');
+      setTimeout(resolve, 800);
+    }, 2200);
+  });
+}
+
+function typeText(text, target) {
+  return new Promise(resolve => {
+    target.innerHTML = '';
+    let i = 0;
+    isTyping = true;
+    typeTimer = setInterval(() => {
+      if (i < text.length) {
+        const char = text[i];
+        if (char === '\n') {
+          target.innerHTML += '<br>';
+        } else {
+          target.innerHTML += char;
+        }
+        i++;
+      } else {
+        clearInterval(typeTimer);
+        isTyping = false;
+        target.innerHTML += '<span class="cursor"></span>';
+        el('click-hint').classList.add('show');
+        resolve();
+      }
+    }, CHAR_DELAY);
+  });
+}
+
+function skipTyping(text, target) {
+  clearInterval(typeTimer);
+  isTyping = false;
+  let html = text.replace(/\n/g, '<br>') + '<span class="cursor"></span>';
+  target.innerHTML = html;
+  el('click-hint').classList.add('show');
+}
+
+function updateCharacters(charConfig) {
+  const chars = ['player', 'seller', 'vet', 'police'];
+  chars.forEach(id => {
+    const el_c = el('char-' + id);
+    if (!el_c) return;
+    el_c.classList.add('hidden');
+    el_c.classList.remove('active', 'dimmed');
+    el_c.innerHTML = '';
+  });
+
+  setTimeout(() => {
+    chars.forEach(id => {
+      const cfg = charConfig[id];
+      if (!cfg && cfg !== false) return;
+      const el_c = el('char-' + id);
+      if (id === 'player') el_c.innerHTML = makePlayerSVG(cfg || 'normal');
+      else if (id === 'seller') el_c.innerHTML = makeSellerSVG(cfg || 'normal');
+      else if (id === 'vet') el_c.innerHTML = makeVetSVG();
+      else if (id === 'police') el_c.innerHTML = makePoliceSVG();
+      el_c.classList.remove('hidden');
+    });
+  }, 100);
+}
+
+function updateCharExpressions(step) {
+  if (step.player !== undefined) {
+    const pc = el('char-player');
+    if (!pc.classList.contains('hidden')) {
+      pc.innerHTML = makePlayerSVG(step.player);
+    }
+  }
+  if (step.seller !== undefined) {
+    const sc = el('char-seller');
+    if (!sc.classList.contains('hidden')) {
+      sc.innerHTML = makeSellerSVG(step.seller);
+    }
+  }
+  if (step.vet) {
+    const vc = el('char-vet');
+    if (!vc.classList.contains('hidden')) vc.innerHTML = makeVetSVG();
+  }
+  if (step.police) {
+    const poc = el('char-police');
+    if (!poc.classList.contains('hidden')) poc.innerHTML = makePoliceSVG();
+  }
+}
+
+function showCat(type) {
+  const catEl = el('cat-display');
+  if (!type) {
+    catEl.classList.add('hidden');
+    return;
+  }
+  catEl.innerHTML = makeCatSVG(type === 'healthy');
+  catEl.classList.remove('hidden');
+}
+
+function setBg(scene) {
+  el('scene-bg').style.background = makeBgCSS(scene);
+}
+
+function doFlash() {
+  const f = el('flash');
+  f.style.opacity = '1';
+  setTimeout(() => { f.style.opacity = '0'; }, 200);
+}
+
+function updateProgress(idx) {
+  const total = SCRIPT.filter(s => s.type !== 'chapter' && s.type !== 'goto' && !s.id && s.speaker).length;
+  const done = SCRIPT.slice(0, idx).filter(s => s.speaker).length;
+  el('progress-indicator').textContent = `${done} / ${total}`;
+  const pct = Math.min(done / total * 5, 5);
+  document.querySelectorAll('.emo-dot').forEach((d, i) => {
+    d.classList.toggle('active', i < pct);
+  });
+}
+
+function showChoices(step) {
+  const choicesEl = el('choices');
+  choicesEl.innerHTML = '';
+  el('dialog-box').style.cursor = 'default';
+  el('click-hint').classList.remove('show');
+
+  el('speaker-name').textContent = '';
+  el('dialog-text').innerHTML = `<span style="color:var(--subtext);font-size:13px">${step.text}</span>`;
+
+  step.options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    btn.textContent = opt.text;
+    btn.onclick = () => {
+      choicesEl.innerHTML = '';
+      el('dialog-box').style.cursor = 'pointer';
+      jumpTo = opt.next;
+      advanceScript();
+    };
+    choicesEl.appendChild(btn);
+  });
+}
+
+async function advanceScript() {
+  if (isTyping) {
+    const textEl = el('dialog-text');
+    const step = SCRIPT[scriptIndex - 1];
+    if (step && step.text) {
+      skipTyping(step.text, textEl);
+    }
+    return;
+  }
+
+  el('click-hint').classList.remove('show');
+
+  // Handle jumpTo
+  if (jumpTo) {
+    const target = jumpTo;
+    jumpTo = null;
+    const targetIdx = SCRIPT.findIndex(s => s.id === target);
+    if (targetIdx !== -1) scriptIndex = targetIdx;
+  }
+
+  while (scriptIndex < SCRIPT.length) {
+    const step = SCRIPT[scriptIndex];
+    scriptIndex++;
+
+    // Skip IDs and goto markers silently
+    if (step.id || step.type === 'goto') {
+      if (step.type === 'goto') {
+        const ti = SCRIPT.findIndex(s => s.id === step.target);
+        if (ti !== -1) { scriptIndex = ti; }
+      }
+      continue;
+    }
+
+    if (step.type === 'chapter') {
+      await showChapter(step.num, step.title, step.sub);
+      continue;
+    }
+
+    if (step.type === 'ending') {
+      setTimeout(() => {
+        el('ending-screen').classList.add('show');
+      }, 600);
+      return;
+    }
+
+    if (step.flash) {
+      doFlash();
+      continue;
+    }
+
+    if (step.bg) { setBg(step.bg); }
+    if (step.chars) { updateCharacters(step.chars); }
+    if (step.cat !== undefined) { showCat(step.cat === false ? null : step.cat); }
+
+    if (step.type === 'choice') {
+      showChoices(step);
+      return;
+    }
+
+    if (step.speaker) {
+      // Update expressions
+      updateCharExpressions(step);
+
+      // Dim/activate characters
+      const speakers = {
+        '雨晴': 'player', '林 詐欺': 'seller',
+        '王 獸醫': 'vet', '陳 警官': 'police'
+      };
+      const activeSpeaker = speakers[step.speaker];
+      ['player', 'seller', 'vet', 'police'].forEach(id => {
+        const c = el('char-' + id);
+        if (c.classList.contains('hidden')) return;
+        if (activeSpeaker === id) {
+          c.classList.add('active'); c.classList.remove('dimmed');
+        } else {
+          c.classList.add('dimmed'); c.classList.remove('active');
+        }
+      });
+
+      // Name color
+      const nameColors = {
+        '雨晴': 'var(--accent)',
+        '林 詐欺': '#a0d870',
+        '王 獸醫': 'var(--accent2)',
+        '陳 警官': 'var(--gold)',
+        '（旁白）': 'var(--subtext)',
+        '（法官宣判）': 'var(--gold)'
+      };
+      const nc = el('speaker-name');
+      nc.textContent = step.speaker;
+      nc.style.color = nameColors[step.speaker] || 'var(--accent)';
+
+      updateProgress(scriptIndex);
+      await typeText(step.text, el('dialog-text'));
+      waitingForClick = true;
+      return;
+    }
+  }
+}
+
+function handleClick() {
+  if (el('choices').children.length > 0) return;
+  if (isTyping) {
+    const step = SCRIPT[scriptIndex - 1];
+    if (step && step.text) {
+      skipTyping(step.text, el('dialog-text'));
+    }
+    return;
+  }
+  if (waitingForClick) {
+    waitingForClick = false;
+    advanceScript();
+  }
+}
+
+function startGame() {
+  const ts = el('title-screen');
+  ts.classList.add('fade-out');
+  setTimeout(() => {
+    ts.style.display = 'none';
+    advanceScript();
+  }, 1000);
+}
+
+// Keyboard support
+document.addEventListener('keydown', e => {
+  if (e.code === 'Space' || e.code === 'Enter') {
+    handleClick();
+  }
+});
+</script>
+</body>
+</html>
