@@ -431,7 +431,7 @@
     <div id="main-subtitle">— 那隻貓，知道所有秘密 —</div>
     <button id="start-btn" onclick="startGame()">開始故事</button>
     <div style="font-size:11px; color:rgba(255,255,255,0.2); margin-top:20px; letter-spacing:2px;">點擊對話可繼續</div>
-    <div style="font-size:10px; color:rgba(247,168,208,0.3); letter-spacing:2px;">v11</div>
+    <div style="font-size:10px; color:rgba(247,168,208,0.3); letter-spacing:2px;">v12</div>
   </div>
 
   <!-- 場景背景 -->
@@ -878,14 +878,16 @@ const ASSETS = {
     yuqing: {
       normal:     'images/player_normal.png',
       happy:      'images/player_happy.png',
-      // sad:        'images/player_sad.png',
-      // angry:      'images/player_angry.png',
-      // determined: 'images/player_determined.png',
+      sad:        'images/player_sad.png',
+      angry:      'images/player_angry.png',
+      determined: 'images/player_determined.png',
     },
-    // rin: {
-    //   neutral: 'images/rin_neutral.png',
-    //   smile:   'images/rin_smile.png',
-    // },
+    rin: {
+      neutral: 'images/rin_neutral.png',
+      smile:   'images/rin_smile.png',
+      serious: 'images/rin_serious.png',
+      soft:    'images/rin_soft.png',
+    },
     // seller: {
     //   sly:        'images/seller_sly.png',
     //   scared:     'images/seller_scared.png',
@@ -933,7 +935,7 @@ const SCRIPT = [
   { speaker: '（旁白）', text: '草叢裡，傳來一聲微弱的叫聲。\n是一隻橘白色的小貓——\n受傷了，身上掛著一把舊鑰匙和一張字條。' },
   { speaker: '（字條）', text: '「如果你找到她，請幫我找到真相。\n她知道所有秘密。\n鑰匙是入口。\n\n——李明」' },
   { speaker: '我', text: '……什麼意思？' },
-  { speaker: '（旁白）', text: '我不知道「李明」是誰。\n但那雙半閉的眼睛看著我，\n我沒辦法就這樣走掉。' },
+  { speaker: '（旁白）', text: '我不知道「李明」是誰。\n但那雙半閉的眼睛看著我——\n我把牠抱起來。\n沒有猶豫。' },
 
   // ══════════════════════════════════════
   // ── Chapter 1：夜光動物醫院 ──
@@ -942,39 +944,38 @@ const SCRIPT = [
   { bg: 'vet', chars: { rin: 'neutral' }, cat: 'sick' },
   { speaker: '（旁白）', text: '我衝進了最近的 24 小時動物醫院。\n接待我的，是一個看起來不太歡迎我的年輕醫生。' },
   { speaker: '謝 凜', text: '現在是凌晨兩點。', rin: 'neutral' },
-  { speaker: '我', text: '我知道。但牠受傷了。' },
+  { speaker: '我', text: '我知道。但牠快不行了——\n拜託你，先幫我看牠。' },
   { speaker: '謝 凜', text: '……把牠放這裡。', rin: 'serious' },
   { speaker: '（旁白）', text: '他沒有多說什麼，立刻開始檢查。\n動作很快，很穩。\n這個人，不是在敷衍我。' },
   { speaker: '謝 凜', text: '外傷、輕微脫水、有應激反應。\n不是太嚴重。你來得及時。', rin: 'neutral' },
-  { speaker: '我', text: '……謝謝你。' },
-  { speaker: '謝 凜', text: '你是她的主人嗎？', rin: 'neutral' },
-  { speaker: '我', text: '不是。我在公園撿到她的。\n她身上有一張字條和一把鑰匙。' },
-  { speaker: '謝 凜', text: '（停頓片刻）\n……明白了。', rin: 'soft' },
+  { speaker: '我', text: '（鬆了口氣）……太好了。謝謝你。\n你叫什麼名字？' },
+  { speaker: '謝 凜', text: '謝凜。\n你是她的主人嗎？', rin: 'neutral' },
+  { speaker: '我', text: '不是，公園撿到的。\n她身上有一張字條和一把鑰匙，說要我「找到真相」。\n聽起來很荒唐，但我沒辦法就走掉。' },
+  { speaker: '謝 凜', text: '（停頓，看了我一眼）\n……不荒唐。', rin: 'soft' },
 
   // ══════════════════════════════════════
   // ── Chapter 2：橘色時光 ──
   // ══════════════════════════════════════
   { type: 'chapter', num: 'Chapter 02', title: '橘色時光', sub: '那隻貓，認識的人' },
   { bg: 'home', chars: {}, cat: 'healthy' },
-  { speaker: '（旁白）', text: '小橘——我暫時這樣叫她——\n在我家住了三天後，恢復了元氣。\n那把鑰匙，還有那張字條，一直讓我想不通。' },
-  { speaker: '（旁白）', text: '我在貓咪論壇搜尋「李明」，\n找到了一個帳號，總是在一間咖啡廳打卡——\n「橘色時光」。' },
+  { speaker: '（旁白）', text: '小橘在我家住了三天，恢復了元氣。\n那把鑰匙，還有「李明」這個名字，\n一直讓我想不通。' },
+  { speaker: '我', text: '（盯著鑰匙）\n……你到底要我找什麼？' },
+  { speaker: '（旁白）', text: '我在貓咪論壇搜尋「李明」，\n找到一個帳號，固定在一間咖啡廳打卡——\n「橘色時光」。' },
   { bg: 'shop_page', chars: { yuqing: 'normal' }, cat: false },
   { speaker: '（旁白）', text: '那間咖啡廳的工讀生，\n看到小橘的照片，愣住了。' },
   { speaker: '雨晴', text: '……這是小橘。\n這是明哥的貓。', yuqing: 'normal' },
-  { speaker: '我', text: '你認識她的主人？' },
-  { speaker: '雨晴', text: '他是我的前輩。一個調查記者。\n三個月前，他失蹤了。', yuqing: 'sad' },
-  { speaker: '（旁白）', text: '她抬起頭看著我，\n眼神裡有擔心，也有一絲戒備。' },
+  { speaker: '我', text: '你認識她的主人？你叫什麼名字？' },
+  { speaker: '雨晴', text: '林雨晴。\n明哥是我前輩，一個調查記者。\n三個月前，他失蹤了。', yuqing: 'sad' },
+  { speaker: '（旁白）', text: '她抬起頭，眼神裡有擔心，也有戒備。\n漂亮的眼睛，藏著很多東西。' },
   { speaker: '雨晴', text: '你是誰？你為什麼有小橘？', yuqing: 'normal' },
-  { speaker: '我', text: '我在公園撿到她的。\n李明留了一張字條，說要我「找到真相」。\n那把鑰匙……你知道它開什麼嗎？' },
-  { speaker: '雨晴', text: '（深呼吸）\n……你願意幫我找他嗎？', yuqing: 'sad' },
-
-  // 選擇——路線分歧
+  { speaker: '我', text: '我在公園撿到她的。\n字條上說「幫我找到真相」。\n我不打算置之不理。' },
+  { speaker: '雨晴', text: '（重新打量我）\n……你願意幫我找他嗎？', yuqing: 'sad' },
   {
     type: 'choice',
-    text: '我決定先從哪裡追查？',
+    text: '我怎麼回答她？',
     options: [
-      { text: '「跟你一起，從咖啡廳查起。」', next: 'yuqing_route' },
-      { text: '「我先去問那個幫小橘看診的醫生。」', next: 'rin_route' }
+      { text: '「我已經決定了。帶我去你知道的地方。」', next: 'yuqing_route' },
+      { text: '「我先去問那個幫小橘看診的醫生，再來找你。」', next: 'rin_route' }
     ]
   },
 
@@ -982,28 +983,69 @@ const SCRIPT = [
   // ── 雨晴路線 ──
   // ══════════════════════════════════════
   { id: 'yuqing_route' },
-  { type: 'chapter', num: 'Chapter 03', title: '明哥的角落', sub: '雨晴 ✦ — 咖啡廳裡的秘密' },
-  { bg: 'shop_page', chars: { yuqing: 'determined' }, cat: false },
-  { speaker: '（旁白）', text: '雨晴帶我去咖啡廳角落——\n一張靠窗的小桌，明哥固定坐的位置。' },
-  { speaker: '雨晴', text: '他失蹤前一週，說在追一個很大的題材。\n但他沒告訴我是什麼。', yuqing: 'normal' },
-  { speaker: '我', text: '那把鑰匙，你見過嗎？' },
+  { type: 'chapter', num: 'Chapter 03', title: '明哥的角落', sub: '雨晴 ✦ — 咖啡廳裡藏著的秘密' },
+  { bg: 'shop_page', chars: { yuqing: 'normal' }, cat: false },
+  { speaker: '（旁白）', text: '她帶我去咖啡廳角落——\n一張靠窗的小桌，明哥固定坐的位置。' },
+  { speaker: '我', text: '他失蹤前，有沒有說過什麼異常的事？' },
+  { speaker: '雨晴', text: '說在追一個很大的題材。\n但他沒告訴我是什麼，\n說「越少人知道越安全」。', yuqing: 'normal' },
+  { speaker: '我', text: '這把鑰匙你見過嗎？' },
   { speaker: '雨晴', text: '（盯著鑰匙）\n……見過。他常拿著它發呆，\n說是「最重要的東西的入口」。', yuqing: 'normal' },
-  { speaker: '（旁白）', text: '我們在桌底發現了一行塗鴉暗語。\n對照鑰匙的形狀——是地下儲藏室的鎖。' },
-  { speaker: '雨晴', text: '（小聲）那裡，平常不對外開放……', yuqing: 'sad' },
+  { speaker: '我', text: '那我們找找看。\n這張桌子，有沒有什麼你沒注意過的。' },
+  { speaker: '（旁白）', text: '我主動蹲下來，摸了摸桌底——\n有一行潦草的塗鴉暗語。\n對照鑰匙的形狀，是地下儲藏室的鎖。' },
+  { speaker: '雨晴', text: '（吃驚）你怎麼……？', yuqing: 'happy' },
+  { speaker: '我', text: '直覺。走吧，帶我去儲藏室。' },
   { speaker: '（旁白）', text: '鑰匙轉動的瞬間，我們都屏住了呼吸。\n裡面有一個防水小盒子——\n筆記本、USB，還有一封信。' },
   { speaker: '雨晴', text: '（顫抖著聲音）\n這是明哥的字跡……', yuqing: 'sad' },
+  {
+    type: 'choice',
+    text: '雨晴的聲音在顫抖。我……',
+    options: [
+      { text: '（輕輕放手在她肩上）「我在。慢慢來。」', next: 'yq_c3a' },
+      { text: '（直接）「你沒事吧？先坐下來。」', next: 'yq_c3b' }
+    ]
+  },
+  { id: 'yq_c3a' },
+  { speaker: '雨晴', text: '（微微愣了一下，然後深呼吸）\n……謝謝。', yuqing: 'normal' },
+  { type: 'goto', target: 'yq_ch4' },
+  { id: 'yq_c3b' },
+  { speaker: '雨晴', text: '（抬頭看我）\n……你不會走吧。', yuqing: 'sad' },
+  { speaker: '我', text: '不走。' },
+  { type: 'goto', target: 'yq_ch4' },
 
+  { id: 'yq_ch4' },
   { type: 'chapter', num: 'Chapter 04', title: '夜晚的筆記本', sub: '拼湊謎題，也拼湊距離' },
   { bg: 'home', chars: { yuqing: 'determined' }, cat: 'healthy' },
   { speaker: '（旁白）', text: '咖啡廳打烊後，我們回到我家整理筆記本。\n小橘安靜坐在我們中間，像在守護什麼。' },
-  { speaker: '雨晴', text: '「星空」——這個名字出現了很多次。\n表面是寵物店，背後是走私前哨。\n明哥追到了幕後的人……但名字被塗掉了。', yuqing: 'determined' },
-  { speaker: '我', text: '他在保護這份資料，才失蹤的吧。' },
+  { speaker: '雨晴', text: '「星空」——這個名字出現了很多次。\n表面是寵物店，背後是走私前哨。\n明哥查到了幕後的人，但名字被塗掉了。', yuqing: 'determined' },
+  { speaker: '我', text: '他塗掉名字，是為了保護這份資料。\n所以才失蹤的。' },
   { speaker: '雨晴', text: '……我知道。\n所以我不能讓他白白消失。', yuqing: 'determined' },
-  { speaker: '（旁白）', text: '就在這時——\n窗外，有人影一閃而過。' },
+  { speaker: '我', text: '我也不會讓你一個人做這件事。' },
+  { speaker: '雨晴', text: '（停筆，看著我）\n為什麼？\n你又不認識明哥，也不認識我。', yuqing: 'normal' },
+  { speaker: '我', text: '因為你一個人撐著這件事\n已經撐了三個月了。\n我看得出來。' },
+  { speaker: '雨晴', text: '（低下頭，沉默）\n……', yuqing: 'sad' },
+  { speaker: '（旁白）', text: '就在這時——窗外，有人影一閃而過。' },
   { speaker: '雨晴', text: '（低聲）有人跟蹤我們……？', yuqing: 'sad' },
-  { speaker: '我', text: '把燈關掉。先別動。' },
-  { speaker: '（旁白）', text: '黑暗裡，她靠近了我一點。\n我們屏住呼吸，等待人影離去。\n那一刻，我清楚感覺到——\n她在顫抖。' },
+  {
+    type: 'choice',
+    text: '我的本能反應是……',
+    options: [
+      { text: '（擋在她前面）「往後退，躲起來。」', next: 'yq_dark_a' },
+      { text: '（拉著她的手）「跟我來，別出聲。」', next: 'yq_dark_b' }
+    ]
+  },
+  { id: 'yq_dark_a' },
+  { speaker: '（旁白）', text: '我把燈關掉，站在她前面。\n黑暗裡，她靠近了我一點。\n我們屏住呼吸，等待人影離去。' },
+  { speaker: '雨晴', text: '（輕聲）……你在擋著我。', yuqing: 'normal' },
+  { speaker: '我', text: '（低聲）廢話。' },
+  { type: 'goto', target: 'yq_dark_end' },
+  { id: 'yq_dark_b' },
+  { speaker: '（旁白）', text: '我拉著她的手，躲進牆角。\n黑暗裡，兩個人的呼吸靠得很近。\n她的手有點涼。\n我沒有放開。' },
+  { speaker: '雨晴', text: '（幾乎沒有聲音）……你的手很暖。', yuqing: 'normal' },
+  { type: 'goto', target: 'yq_dark_end' },
+  { id: 'yq_dark_end' },
+  { speaker: '（旁白）', text: '人影遠去了。\n我們沉默了很久，才各自鬆了一口氣。' },
   { speaker: '雨晴', text: '……謝謝你沒有走。', yuqing: 'normal' },
+  { speaker: '我', text: '我說過不走的。' },
 
   { type: 'chapter', num: 'Chapter 05', title: '她等的人，回來了', sub: '— 真相，終於回到了光裡 —' },
   { bg: 'police', chars: { yuqing: 'determined', police: true }, cat: false },
@@ -1016,9 +1058,24 @@ const SCRIPT = [
   { speaker: '雨晴', text: '你這個大笨蛋——\n消失了三個月，連小橘都扔掉——！', yuqing: 'happy' },
   { speaker: '（旁白）', text: '後來，咖啡廳又安靜了下來。\n就我們兩個，還有小橘。\n窗外是入夜的城市。' },
   { speaker: '雨晴', text: '……你叫什麼名字。\n我還不知道。', yuqing: 'normal' },
-  { speaker: '我', text: '（告訴了她）' },
-  { speaker: '雨晴', text: '（輕輕笑了）\n……記住了。', yuqing: 'happy' },
-  { speaker: '（旁白）', text: '小橘跳上桌，踩在我們中間，\n用額頭蹭了蹭雨晴的手。\n\n然後回頭看了我一眼，\n好像在說：「你還不快點？」' },
+  { speaker: '我', text: '（告訴了她）\n現在知道了。可以繼續認識我嗎？' },
+  { speaker: '雨晴', text: '（微微睜大眼睛）\n……這算是告白嗎？', yuqing: 'happy' },
+  {
+    type: 'choice',
+    text: '算嗎？',
+    options: [
+      { text: '「算。」', next: 'yq_end_a' },
+      { text: '「看你怎麼回答。」', next: 'yq_end_b' }
+    ]
+  },
+  { id: 'yq_end_a' },
+  { speaker: '雨晴', text: '（沉默三秒，然後笑了）\n……好。', yuqing: 'happy' },
+  { type: 'goto', target: 'yq_ending' },
+  { id: 'yq_end_b' },
+  { speaker: '雨晴', text: '（白了我一眼，嘴角卻翹起來）\n……真的很過分。', yuqing: 'happy' },
+  { type: 'goto', target: 'yq_ending' },
+  { id: 'yq_ending' },
+  { speaker: '（旁白）', text: '小橘跳上桌，踩在我們中間，\n用額頭蹭了蹭雨晴的手。\n\n然後回頭看了我一眼，\n閉上眼睛，滿足地打起了呼嚕。' },
   { type: 'ending' },
 
   // ══════════════════════════════════════
@@ -1029,43 +1086,99 @@ const SCRIPT = [
   { bg: 'vet', chars: { rin: 'neutral' }, cat: 'healthy' },
   { speaker: '（旁白）', text: '我帶著小橘回到夜光動物醫院。\n謝凜看到我，略微皺了眉頭。' },
   { speaker: '謝 凜', text: '你又來了。', rin: 'neutral' },
-  { speaker: '我', text: '我想問你一件事。\n最近，有沒有收治過來歷不明、症狀奇怪的貓？' },
+  { speaker: '我', text: '嗯。因為我有問題，只有你能回答。' },
+  { speaker: '謝 凜', text: '……說。', rin: 'neutral' },
+  { speaker: '我', text: '最近有沒有收治過症狀奇怪、\n來歷不明的貓？不只是小橘這一隻。' },
   { speaker: '謝 凜', text: '（停頓）\n……你為什麼這樣問？', rin: 'serious' },
-  { speaker: '我', text: '這隻貓的前主人留下了一張字條，\n說她「知道真相」。\n還有這把鑰匙。' },
-  { speaker: '謝 凜', text: '（看著鑰匙，沉默很長一段時間）\n……進來。', rin: 'serious' },
+  { speaker: '我', text: '小橘的前主人留了字條說「她知道真相」。\n還有這把鑰匙。你見過這種鑰匙嗎？' },
+  { speaker: '謝 凜', text: '（看著鑰匙，長時間沉默）\n……進來。', rin: 'serious' },
   { bg: 'vet', chars: { rin: 'serious' }, cat: false },
-  { speaker: '謝 凜', text: '這三個月，我接診了十一隻來歷不明的貓。\n症狀模式完全一樣。\n我一直在追查。', rin: 'serious' },
-  { speaker: '我', text: '你一個人？' },
-  { speaker: '謝 凜', text: '沒有人信我。\n他們說我想太多。', rin: 'neutral' },
-  { speaker: '謝 凜', text: '……那把鑰匙，我見過同款式的。\n是倉庫某批舊置物箱的鎖。\n那批箱子是前任員工留下的，沒有人動過。', rin: 'neutral' },
+  { speaker: '謝 凜', text: '這三個月，我接診了十一隻來歷不明的貓。\n症狀模式完全一樣。\n我一直在追查，但沒有人相信我。', rin: 'serious' },
+  { speaker: '我', text: '我相信你。' },
+  { speaker: '謝 凜', text: '（抬頭）\n……你才剛認識我。', rin: 'neutral' },
+  { speaker: '我', text: '你的眼神不像在說謊。\n繼續說。' },
+  {
+    type: 'choice',
+    text: '謝凜沉默了一下。我……',
+    options: [
+      { text: '（直接）「那把鑰匙，帶我去找它能開的地方。」', next: 'rin_c3a' },
+      { text: '（靠近一步）「你一個人追這件事多久了？」', next: 'rin_c3b' }
+    ]
+  },
+  { id: 'rin_c3a' },
+  { speaker: '謝 凜', text: '（罕見地，嘴角微動）\n……倉庫。跟我來。', rin: 'soft' },
+  { type: 'goto', target: 'rin_ch4' },
+  { id: 'rin_c3b' },
+  { speaker: '謝 凜', text: '（沉默片刻）\n……兩年。', rin: 'neutral' },
+  { speaker: '我', text: '兩年。\n那我來得正好。' },
+  { speaker: '謝 凜', text: '（輕輕皺眉，但沒有否定）\n……跟我來。', rin: 'neutral' },
+  { type: 'goto', target: 'rin_ch4' },
 
+  { id: 'rin_ch4' },
   { type: 'chapter', num: 'Chapter 04', title: '連夜的追查', sub: '昏黃燈光下，冰冷的距離縮短了' },
   { bg: 'vet', chars: { rin: 'neutral' }, cat: false },
   { speaker: '（旁白）', text: '置物箱裡，是密密麻麻的調查記錄。\n同一個名字反覆出現——「星空」。' },
   { speaker: '謝 凜', text: '一個利用寵物店的走私集團。\n他們進的貓，有的病著，有的被用來運藥。\n最後大部分都……', rin: 'serious' },
-  { speaker: '（旁白）', text: '他沒有說完。\n但我懂了。' },
-  { speaker: '我', text: '你追這件事多久了？' },
-  { speaker: '謝 凜', text: '（低聲）\n……兩年。', rin: 'neutral' },
-  { speaker: '我', text: '為什麼？' },
+  { speaker: '（旁白）', text: '他沒有說完。但我懂了。' },
+  { speaker: '我', text: '你追這件事，是因為有貓因為這樣死掉了嗎？' },
   { speaker: '謝 凜', text: '（停頓很久）\n……我養了十二年的貓，就是這樣死的。', rin: 'soft' },
-  { speaker: '（旁白）', text: '深夜，我們並排坐在昏黃的倉庫燈下整理資料。\n不知道從什麼時候開始，氣氛變了。\n\n然後，警報聲響了。\n有人闖入了醫院後門。' },
-  { speaker: '謝 凜', text: '跟我來。', rin: 'serious' },
-  { speaker: '（旁白）', text: '他拉著我的手腕，穿過走廊，\n躲進了一間暗診間。\n\n呼吸聲交疊在一起。\n他的手，沒有放開。' },
+  { speaker: '我', text: '……叫什麼名字？' },
+  { speaker: '謝 凜', text: '（沒想到我會這樣問）\n……阿灰。', rin: 'soft' },
+  { speaker: '我', text: '阿灰，記住了。\n我們替牠把這件事查清楚。' },
+  { speaker: '謝 凜', text: '（低下頭）\n……好。', rin: 'soft' },
+  { speaker: '（旁白）', text: '深夜，我們並排坐在昏黃的倉庫燈下整理資料。\n他不說話，但不再推開我。\n\n然後，警報聲響了。\n有人闖入了醫院後門。' },
+  { speaker: '謝 凜', text: '跟我來，別出聲。', rin: 'serious' },
+  { speaker: '（旁白）', text: '他拉著我的手腕，穿過走廊，\n躲進了一間暗診間。\n呼吸聲交疊在一起。\n他的手，沒有放開。' },
+  {
+    type: 'choice',
+    text: '黑暗中，我……',
+    options: [
+      { text: '（反握住他的手）「我沒事，放心。」', next: 'rin_dark_a' },
+      { text: '（輕聲）「你手在抖。沒關係。」', next: 'rin_dark_b' }
+    ]
+  },
+  { id: 'rin_dark_a' },
+  { speaker: '謝 凜', text: '（一愣，沒有抽回手）\n……你在安慰我？', rin: 'soft' },
+  { speaker: '我', text: '兩個人都安慰。' },
+  { type: 'goto', target: 'rin_dark_end' },
+  { id: 'rin_dark_b' },
+  { speaker: '謝 凜', text: '（停頓）\n……沒有在抖。', rin: 'neutral' },
+  { speaker: '我', text: '（輕聲笑）有。沒關係。\n我也有點。' },
+  { speaker: '謝 凜', text: '（沉默）\n……', rin: 'soft' },
+  { type: 'goto', target: 'rin_dark_end' },
+  { id: 'rin_dark_end' },
   { speaker: '謝 凜', text: '（極低聲）\n……沒事的。', rin: 'soft' },
+  { speaker: '（旁白）', text: '人影遠去了。\n但我們沉默地站在那裡，\n誰都沒有先動。' },
 
   { type: 'chapter', num: 'Chapter 05', title: '清晨的診療台', sub: '— 那隻貓，完成了她的任務 —' },
   { bg: 'police', chars: { rin: 'neutral', police: true }, cat: false },
   { speaker: '（旁白）', text: '我們把所有資料交給了陳警官。\n那個人連夜被捕，「星空集團」的調查正式展開。' },
   { speaker: '陳 警官', text: '你們兩個，保留好聯繫方式。\n後續可能需要你們配合說明。', police: true },
   { flash: true },
-  { speaker: '（旁白）', text: '清晨的醫院，安靜得像水底。\n謝凜在替小橘做最後一次健康检查，\n我坐在診療台旁邊看著。' },
+  { speaker: '（旁白）', text: '清晨的醫院，安靜得像水底。\n謝凜在替小橘做最後一次健康檢查，\n我坐在診療台旁邊看著他。' },
   { bg: 'vet', chars: { rin: 'soft' }, cat: 'healthy' },
-  { speaker: '謝 凜', text: '她很健康了。\n（停頓）\n如果她的主人找到了，就可以還給他。', rin: 'soft' },
+  { speaker: '謝 凜', text: '她很健康了。\n如果她的主人找到了，就可以還給他。', rin: 'soft' },
   { speaker: '我', text: '如果主人一直找不到呢？' },
   { speaker: '謝 凜', text: '（輕輕抬起頭）\n那就……留下來吧。', rin: 'smile' },
-  { speaker: '（旁白）', text: '小橘從診療台上站起來，\n用腦袋蹭了蹭凜的手，再蹭我的。\n\n凜看著這一幕，\n第一次，真正笑了。' },
+  { speaker: '（旁白）', text: '小橘從診療台上站起來，\n用腦袋蹭了蹭凜的手，再蹭我的。\n凜看著這一幕，第一次，真正笑了。' },
   { speaker: '謝 凜', text: '……你明天，還會來嗎。', rin: 'soft' },
-  { speaker: '我', text: '……嗯。', rin: 'smile' },
+  {
+    type: 'choice',
+    text: '我……',
+    options: [
+      { text: '「每天都會來。你趕不走的。」', next: 'rin_end_a' },
+      { text: '「你希望我來嗎？」', next: 'rin_end_b' }
+    ]
+  },
+  { id: 'rin_end_a' },
+  { speaker: '謝 凜', text: '（沉默片刻）\n……由你。', rin: 'smile' },
+  { speaker: '（旁白）', text: '他別過臉，但我清楚看見了——\n他嘴角的弧度。' },
+  { type: 'goto', target: 'rin_ending' },
+  { id: 'rin_end_b' },
+  { speaker: '謝 凜', text: '（沉默了很久）\n……嗯。', rin: 'soft' },
+  { speaker: '（旁白）', text: '那是我第一次，聽到他說「嗯」。\n不是「明白了」，不是「由你」。\n就是「嗯」。' },
+  { type: 'goto', target: 'rin_ending' },
+  { id: 'rin_ending' },
   { speaker: '（旁白）', text: '清晨的光從窗子透進來。\n小橘在診療台上打了一個哈欠，\n閉上了眼睛。\n\n任務完成了，小橘。' },
   { type: 'ending' }
 
